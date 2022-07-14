@@ -6,10 +6,7 @@
 </template>
 
 <script>
-
 export default {
-  components: {
-  },
 
   data () {
     return {
@@ -20,17 +17,13 @@ export default {
     }
   },
 
-  watch: {
-  },
-
   methods: {
     getFileInfo (e) {
       const file = e.target.files[0]
       console.log(file)
-      const type = file.name.split('.').pop() //* 從檔名最後面來取得檔案類型
+      const type = file.name.split('.').pop() //* 取得檔案類型
       const size = file.size
       //* 驗證圖片類型、大小，其中一個驗證失敗就中斷
-      // this.checkFile(file)
       const typeValidate = this.checkType(type)
       if (!typeValidate) return
       const sizeValidate = this.checkSize(size)
@@ -40,47 +33,35 @@ export default {
       const lastModifiedDate = file.lastModifiedDate.toLocaleString()
       const uploadDate = new Date().toLocaleString()
       this.file = { uploadDate, name, size, type, lastModifiedDate }
-      console.log('gg')
     },
-    // checkFile (file) {
-    // this.checkType(file)
-    // this.checkSize(file)
-    // },
     checkType (type) {
       const result = this.type.includes(type)
-      //* 驗證失敗就中斷
       if (!result) {
-        this.failStatus('請上傳正確的檔案類型！')
+        this.failFeedback('請上傳正確的檔案類型！')
         return false
       } else if (result) {
-        this.successStatus()
+        this.successFeedback()
         return true
       }
     },
     checkSize (size) {
-      console.log(size)
       const result = size < this.size //* 檔案符合大小
-      //* 驗證失敗就中斷
       if (!result) {
-        this.failStatus('檔案大小不得高於 30MB！')
+        this.failFeedback('檔案大小不得高於 30MB！')
         return false
       } else if (result) {
-        this.successStatus()
+        this.successFeedback()
         return true
       }
     },
-    failStatus (content) {
+    failFeedback (content) {
       this.$refs.uploadResult.textContent = content
       this.$refs.uploadResult.className = 'fail text-danger fst-italic'
     },
-    successStatus () {
+    successFeedback () {
       this.$refs.uploadResult.textContent = '上傳成功！'
       this.$refs.uploadResult.className = 'success text-success'
     }
-
-  },
-
-  mounted () {
   }
 
 }
