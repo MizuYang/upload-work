@@ -43,6 +43,17 @@ export default {
     // this.checkSize(file)
     // },
     checkType (type) {
+      const result = this.type.includes(type)
+      //* 驗證失敗就中斷
+      if (!result) {
+        this.$refs.uploadResult.textContent = '請上傳正確的檔案類型！'
+        this.$refs.uploadResult.className = 'fail text-danger fst-italic'
+        return false
+      } else if (result) {
+        this.$refs.uploadResult.textContent = '上傳成功！'
+        this.$refs.uploadResult.className = 'success text-success'
+        return true
+      }
     },
     checkSize (size) {
     }
@@ -56,4 +67,18 @@ export default {
 </script>
 
 <style lang='scss' scope>
+.fail::before {
+  content: '';
+  border: 7px solid red;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+.success::before {
+  content: '';
+  border: 7px solid green;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
 </style>
