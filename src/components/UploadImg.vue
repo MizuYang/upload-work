@@ -9,7 +9,9 @@
     <p ref="uploadResult"></p>
   </div>
   <!-- 檔案預覽 -->
-  <PerviewImg :previewImgUrl="file.PerviewImgUrl"></PerviewImg>
+  <div v-show="progressBarShow === 1">
+    <PerviewImg :previewImgUrl="file.PerviewImgUrl"></PerviewImg>
+  </div>
 </template>
 
 <script>
