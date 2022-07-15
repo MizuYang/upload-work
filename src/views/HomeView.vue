@@ -7,7 +7,7 @@
   <hr />
 
   <section class="my-3">
-    <h2>測試：props 參數,<code>size:165800</code>, <code>w:150</code>, <code>h:150</code></h2>
+    <h2>測試：props 參數,<code>size:165800</code> (B), <code>w:150</code>, <code>h:150</code></h2>
     <UploadImg :size="165800" :type="type" :width="150" :height="150"></UploadImg>
   </section>
 </template>

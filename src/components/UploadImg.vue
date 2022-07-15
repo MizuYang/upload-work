@@ -1,6 +1,6 @@
 <template>
   <label for="file"></label>
-  <input type="file" id="file" name="file" @change="getFileInfo">
+  <input type="file" id="file" name="file" @change="getFileInfo" :accept="accept">
   <div class="my-3" v-show="progressBarShow === 1">
     <ProgressBar ref="progressBar"></ProgressBar>
   </div>
@@ -47,6 +47,7 @@ export default {
         success: 1,
         fail: 2
       },
+      accept: '.jpg, .png, .svg, .gif, .jpeg', //* 上傳時能顯示的檔案類型
       resolutionValidate: false
     }
   },
@@ -71,7 +72,8 @@ export default {
       const name = file.name.split('.')[0]
       const lastModifiedDate = file.lastModifiedDate.toLocaleString()
       const uploadDate = new Date().toLocaleString()
-      this.file = { uploadDate, name, size, type, lastModifiedDate }
+      const newFileName = this.getNewFileName()
+      this.file = { uploadDate, name, newFileName, size, type, lastModifiedDate }
     },
     getProgressBar () {
       this.reader.addEventListener('progress', (event) => {
@@ -85,6 +87,13 @@ export default {
           pBarLabel.innerHTML = Math.round(percent) + '%'
         }
       })
+    },
+    getNewFileName () {
+      const random = `${Math.random()}${Math.random()}`
+      const name = random.split('.')
+      name.shift()
+      const newFileName = name.join('').slice(0, 30) //* 取30位隨機碼
+      return newFileName
     },
     //* 檢查圖片解析度
     checkResolution (file) {
@@ -115,7 +124,6 @@ export default {
         this.failFeedback(`請上傳 ${this.type} 的檔案，您上傳的是 ${type}檔`)
         return false
       } else if (result) {
-        // this.successFeedback()
         return true
       }
     },
@@ -127,7 +135,6 @@ export default {
         this.failFeedback(`檔案大小不得高於 ${validateMB}MB！您的檔案大小為 ${sizeMB} MB`)
         return false
       } else if (result) {
-        // this.successFeedback()
         return true
       }
     },
