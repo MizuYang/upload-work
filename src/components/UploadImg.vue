@@ -1,20 +1,27 @@
 <template>
   <label for="file"></label>
   <input type="file" id="file" name="file" @change="getFileInfo" :accept="accept">
-  <div class="my-3" v-show="progressBarShow === 1">
+  <div class="my-2" v-show="progressBarShow === 1">
+    <!-- 進度條 -->
     <ProgressBar ref="progressBar"></ProgressBar>
   </div>
   <div class="my-3">
     <p ref="uploadResult"></p>
   </div>
+  <!-- 檔案預覽 -->
+  <PerviewImg :previewImgUrl="file.PerviewImgUrl"></PerviewImg>
 </template>
 
 <script>
 import ProgressBar from '@/components/ProgressBar.vue'
+import PerviewImg from '@/components/PreviewImg.vue'
 export default {
+
   components: {
-    ProgressBar
+    ProgressBar,
+    PerviewImg
   },
+
   props: {
     size: {
       type: Number,
@@ -66,14 +73,16 @@ export default {
       }
       const sizeValidate = this.checkSize(size)
       if (!sizeValidate) return
-      //* 驗證通過、取得圖片資訊
-      this.successFeedback()
+      //* 驗證通過
+      this.successFeedback(e)
       this.getProgressBar()
+      //* 取得圖片資訊
       const name = file.name.split('.')[0]
       const lastModifiedDate = file.lastModifiedDate.toLocaleString()
       const uploadDate = new Date().toLocaleString()
       const newFileName = this.getNewFileName()
       this.file = { uploadDate, name, newFileName, size, type, lastModifiedDate }
+      this.getPreviewImgUrl(e) //* 在這取得 url 才不會上面的file被覆蓋
     },
     getProgressBar () {
       this.reader.addEventListener('progress', (event) => {
@@ -94,6 +103,11 @@ export default {
       name.shift()
       const newFileName = name.join('').slice(0, 30) //* 取30位隨機碼
       return newFileName
+    },
+    getPreviewImgUrl (e) {
+      const file = e.target.files[0]
+      const url = URL.createObjectURL(file)
+      this.file.PerviewImgUrl = url
     },
     //* 檢查圖片解析度
     checkResolution (file) {
@@ -144,7 +158,7 @@ export default {
       this.$refs.uploadResult.textContent = content
       this.$refs.uploadResult.className = 'fail text-danger fst-italic'
     },
-    successFeedback () {
+    successFeedback (e) {
       this.progressBarShow = this.uploadStatus.success
       this.$refs.uploadResult.textContent = '上傳成功！'
       this.$refs.uploadResult.className = 'success text-success'

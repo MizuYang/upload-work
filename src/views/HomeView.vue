@@ -15,6 +15,7 @@
 <script>
 import UploadImg from '@/components/UploadImg.vue'
 export default {
+
   components: {
     UploadImg
   },
@@ -25,12 +26,11 @@ export default {
       size: 31457280,
       type: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif'],
       width: 400,
-      height: 400
+      height: 400,
+      previewShow: false, //* 圖片預覽
+      previewImgUrl: ''
 
     }
-  },
-
-  mounted () {
   }
 }
 </script>
