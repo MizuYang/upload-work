@@ -1,8 +1,8 @@
 <template>
   <label for="file"></label>
-  <input type="file" id="file " name="file" @change="getFileInfo">
-  <div class="my-3">
-    <ProgressBar></ProgressBar>
+  <input type="file" id="file" name="file" @change="getFileInfo">
+  <div class="my-3" v-show="progressBarShow === 1">
+    <ProgressBar ref="progressBar"></ProgressBar>
   </div>
   <div class="my-3">
     <p ref="uploadResult"></p>
@@ -39,7 +39,15 @@ export default {
   data () {
     return {
       file: {},
-      imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif']
+      reader: '',
+      imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif'],
+      progressBarShow: 0,
+      uploadStatus: {
+        null: 0,
+        success: 1,
+        fail: 2
+      },
+      resolutionValidate: false
     }
   },
 
@@ -53,22 +61,36 @@ export default {
       if (!typeValidate) return
       //* 若為圖檔，驗證寬高(解析度)
       if (this.imgType.includes(type)) {
-        const resolutionValidate = this.checkResolution(file)
-        if (!resolutionValidate) return
+        // const resolutionValidate = this.checkType(type)
+        // if (!resolutionValidate) return
+        this.checkResolution(file)
       }
       const sizeValidate = this.checkSize(size)
       if (!sizeValidate) return
       //* 驗證通過、取得圖片資訊
       this.successFeedback()
+      this.getProgressBar()
       const name = file.name.split('.')[0]
       const lastModifiedDate = file.lastModifiedDate.toLocaleString()
       const uploadDate = new Date().toLocaleString()
       this.file = { uploadDate, name, size, type, lastModifiedDate }
     },
+    getProgressBar () {
+      this.reader.addEventListener('progress', (event) => {
+        if (event.loaded && event.total) {
+          // 計算完成百分比
+          const percent = (event.loaded / event.total) * 100
+          // 將值設定為進度元件
+          const pBarVal = this.$refs.progressBar.$refs.progress
+          const pBarLabel = this.$refs.progressBar.$refs.progressLabel
+          pBarVal.value = percent
+          pBarLabel.innerHTML = Math.round(percent) + '%'
+        }
+      })
+    },
     //* 檢查圖片解析度
     checkResolution (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
+      this.reader.onload = (e) => {
         const data = e.target.result //* 取得 Base64
         // 加载图片获取图片真实宽度和高度
         const image = new Image()
@@ -78,16 +100,15 @@ export default {
           const result = width < this.width && height < this.height
           if (!result) {
             this.failFeedback(`圖片寬高須低於${this.width}*${this.height}！`)
-            return false
+            this.resolutionValidate = false
           } else if (result) {
-            return true
+            this.resolutionValidate = true
           }
         }
+        if (!this.resolutionValidate) return
         image.src = data
-        return image
       }
-      reader.readAsDataURL(file)
-      return reader
+      this.reader.readAsDataURL(file)
     },
     checkType (type) {
       const result = this.type.includes(type)
@@ -111,16 +132,20 @@ export default {
         return true
       }
     },
+    //* 上傳回饋
     failFeedback (content) {
+      this.progressBarShow = this.uploadStatus.fail
       this.$refs.uploadResult.textContent = content
       this.$refs.uploadResult.className = 'fail text-danger fst-italic'
     },
     successFeedback () {
+      this.progressBarShow = this.uploadStatus.success
       this.$refs.uploadResult.textContent = '上傳成功！'
       this.$refs.uploadResult.className = 'success text-success'
     }
   },
   mounted () {
+    this.reader = new FileReader()
   }
 
 }
