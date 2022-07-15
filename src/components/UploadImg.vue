@@ -61,6 +61,7 @@ export default {
 
   methods: {
     getFileInfo (e) {
+      if (!e) { return }
       const file = e.target.files[0]
       const type = file.name.split('.').pop() //* 取得檔案類型
       const size = file.size
@@ -109,6 +110,9 @@ export default {
       const url = URL.createObjectURL(file)
       this.file.PerviewImgUrl = url
     },
+    clearPreviewImgUrl () {
+      this.file.PerviewImgUrl = ''
+    },
     //* 檢查圖片解析度
     checkResolution (file) {
       this.resolutionValidate = false
@@ -155,6 +159,7 @@ export default {
     //* 上傳回饋
     failFeedback (content) {
       this.progressBarShow = this.uploadStatus.fail
+      this.clearPreviewImgUrl()
       this.$refs.uploadResult.textContent = content
       this.$refs.uploadResult.className = 'fail text-danger fst-italic'
     },
