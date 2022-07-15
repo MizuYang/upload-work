@@ -61,8 +61,6 @@ export default {
       if (!typeValidate) return
       //* 若為圖檔，驗證寬高(解析度)
       if (this.imgType.includes(type)) {
-        // const resolutionValidate = this.checkType(type)
-        // if (!resolutionValidate) return
         this.checkResolution(file)
       }
       const sizeValidate = this.checkSize(size)
@@ -90,6 +88,7 @@ export default {
     },
     //* 檢查圖片解析度
     checkResolution (file) {
+      this.resolutionValidate = false
       this.reader.onload = (e) => {
         const data = e.target.result //* 取得 Base64
         // 加载图片获取图片真实宽度和高度
@@ -105,7 +104,7 @@ export default {
             this.resolutionValidate = true
           }
         }
-        if (!this.resolutionValidate) return
+        if (this.resolutionValidate) { return } //* 驗證失敗中斷程式碼
         image.src = data
       }
       this.reader.readAsDataURL(file)
