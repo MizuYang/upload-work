@@ -31,6 +31,7 @@ import ProgressBar from '@/components/ProgressBar.vue' //* 進度條
 import PerviewImg from '@/components/PreviewImg.vue' //* 圖片預覽
 import CropImg from '@/components/CropImg.vue' //* 圖片裁切
 import CropSize from '@/components/CropSize.vue' //* 裁切尺寸設定
+import heic2any from 'heic2any'
 export default {
 
   components: {
@@ -92,7 +93,7 @@ export default {
       const type = file.name.split('.').pop() //* 取得檔案類型
       const size = file.size
       //* 驗證類型、大小，一個驗證失敗就中斷
-      const typeValidate = this.checkType(type)
+      const typeValidate = this.checkType(type, file)
       if (!typeValidate) return
       //* 若為圖檔，驗證寬高(解析度)
       if (this.imgType.includes(type)) {
@@ -150,6 +151,18 @@ export default {
     clearPreviewImgUrl () {
       this.file.PerviewImgUrl = ''
     },
+    //* 若圖檔為 heic 或 heif 則轉檔為 JPG
+    heic2Jpeg (file) {
+      const that = this
+      heic2any({
+        blob: file, //* 将heic转换成一个buffer数组的图片
+        toType: 'image/jpeg', //* 要转化成具体的图片格式，可以是png/gif
+        quality: 1 //* 图片的质量，参数在0-1之间
+      }).then(function (heicToJpgResult) {
+        // 后续上传逻辑
+        that.file.PerviewImgUrl = URL.createObjectURL(heicToJpgResult)
+      })
+    },
     //* 檢查圖片解析度
     checkResolution (file) {
       this.resolutionValidate = false
@@ -173,7 +186,10 @@ export default {
       }
       this.reader.readAsDataURL(file)
     },
-    checkType (type) {
+    checkType (type, file) {
+      if (type === 'heic' || type === 'heif') {
+        this.heic2Jpeg(file)
+      }
       const result = this.type.includes(type)
       if (!result) {
         this.failFeedback(`請上傳 ${this.type} 的檔案，您上傳的是 ${type}檔`)

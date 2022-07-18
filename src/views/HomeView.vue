@@ -31,7 +31,7 @@ export default {
     return {
       isLoading: false,
       size: 31457280,
-      type: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif'],
+      type: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'heic', 'heif'],
       width: 400,
       height: 400,
       previewShow: false, //* 圖片預覽
