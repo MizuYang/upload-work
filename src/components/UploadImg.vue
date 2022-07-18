@@ -72,7 +72,7 @@ export default {
     return {
       file: {},
       reader: '',
-      imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif'],
+      imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'heic', 'heif'],
       status: 0,
       uploadStatus: {
         null: 0,
