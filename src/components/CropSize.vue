@@ -1,11 +1,16 @@
 <template>
-  <input type="radio" id="radioA" name="radio" value="自由裁切"
+  <!-- <input type="radio" id="radioA" name="radio" value="自由裁切"
      v-model="cropType">
     <label for="radioA">自由裁切</label>
     <br />
     <input type="radio" id="radioB" name="radio" value="限制裁切寬高"
      v-model="cropType">
-    <label for="radioB">限制裁切寬高</label>
+    <label for="radioB">限制裁切寬高</label> -->
+    <h3>裁切模式</h3>
+    <select name="" id="" v-model="cropType">
+      <option value="自由裁切">自由裁切</option>
+      <option value="限制裁切寬高">限制裁切寬高</option>
+    </select>
     <div class="my-3" v-if="cropType==='限制裁切寬高'">
       <p class="fs-5">輸入希望裁切的圖片尺寸</p>
       <label for="width">寬：</label>
@@ -21,10 +26,8 @@
 <script>
 
 export default {
-  components: {
-  },
 
-  emits: ['getCropSize', 'getCropType'],
+  emits: ['getCropSize', 'getCropMode'],
 
   watch: {
     crop: {
@@ -34,7 +37,7 @@ export default {
       deep: true
     },
     cropType () {
-      this.$emit('getCropType', this.cropType)
+      this.$emit('getCropMode', this.cropType)
     }
   },
 
@@ -46,15 +49,7 @@ export default {
       },
       cropType: '自由裁切'
     }
-  },
-
-  methods: {
-  },
-
-  mounted () {
   }
 
 }
 </script>
-
-<style lang='scss' scope></style>

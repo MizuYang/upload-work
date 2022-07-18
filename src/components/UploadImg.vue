@@ -14,14 +14,14 @@
   <div v-if="uploadSuccess" class="my-3">
     <PerviewImg :imgUrl="file.PerviewImgUrl"></PerviewImg>
   </div>
+  <!-- 裁切模式、裁切尺寸 -->
+    <div v-if="uploadSuccess" class="my-5">
+      <CropSize @getCropSize="getCropSize" @getCropMode="getCropMode"></CropSize>
+    </div>
   <!-- 圖片裁切 -->
   <div v-if="uploadSuccess" class="my-5">
     <div class="my-3">
       <CropImg :imgUrl="file.PerviewImgUrl" :cropW="cropSize.width" :cropH="cropSize.height" :fixedSize="fixedSize"></CropImg>
-    </div>
-  <!-- 裁切尺寸設定 -->
-  <div v-if="uploadSuccess" class="my-5">
-    <CropSize @getCropSize="getCropSize" @getCropType="getCropType"></CropSize>
     </div>
   </div>
 </template>
@@ -135,7 +135,7 @@ export default {
       this.cropSize.width = cropSize.width
       this.cropSize.height = cropSize.height
     },
-    getCropType (cropType) {
+    getCropMode (cropType) {
       if (cropType === '自由裁切') {
         this.fixedSize = false
       } else if (cropType === '限制裁切寬高') {
