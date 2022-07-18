@@ -10,6 +10,13 @@
     <h2>測試：props 參數,<code>size:165800</code> (B), <code>w:150</code>, <code>h:150</code></h2>
     <UploadImg :size="165800" :type="type" :width="150" :height="150"></UploadImg>
   </section>
+
+  <hr />
+
+  <section class="my-3">
+    <h2>測試裁切</h2>
+    <UploadImg :size="1658000" :type="type" :width="1500" :height="1500"></UploadImg>
+  </section>
 </template>
 
 <script>
@@ -29,7 +36,6 @@ export default {
       height: 400,
       previewShow: false, //* 圖片預覽
       previewImgUrl: ''
-
     }
   }
 }

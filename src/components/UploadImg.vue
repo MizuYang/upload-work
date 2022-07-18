@@ -1,27 +1,43 @@
 <template>
   <label for="file"></label>
   <input type="file" id="file" name="file" @change="getFileInfo" :accept="accept">
-  <div class="my-2" v-show="progressBarShow === 1">
-    <!-- 進度條 -->
+
+  <!-- 進度條 -->
+  <div class="my-2" v-if="uploadSuccess">
     <ProgressBar ref="progressBar"></ProgressBar>
   </div>
+  <!-- 上傳 成功/失敗 回饋 -->
   <div class="my-3">
     <p ref="uploadResult"></p>
   </div>
   <!-- 檔案預覽 -->
-  <div v-show="progressBarShow === 1">
-    <PerviewImg :previewImgUrl="file.PerviewImgUrl"></PerviewImg>
+  <div v-if="uploadSuccess" class="my-3">
+    <PerviewImg :imgUrl="file.PerviewImgUrl"></PerviewImg>
+  </div>
+  <!-- 圖片裁切 -->
+  <div v-if="uploadSuccess" class="my-5">
+    <div class="my-3">
+      <CropImg :imgUrl="file.PerviewImgUrl" :cropW="cropSize.width" :cropH="cropSize.height" :fixedSize="fixedSize"></CropImg>
+    </div>
+  <!-- 裁切尺寸設定 -->
+  <div v-if="uploadSuccess" class="my-5">
+    <CropSize @getCropSize="getCropSize" @getCropType="getCropType"></CropSize>
+    </div>
   </div>
 </template>
 
 <script>
-import ProgressBar from '@/components/ProgressBar.vue'
-import PerviewImg from '@/components/PreviewImg.vue'
+import ProgressBar from '@/components/ProgressBar.vue' //* 進度條
+import PerviewImg from '@/components/PreviewImg.vue' //* 圖片預覽
+import CropImg from '@/components/CropImg.vue' //* 圖片裁切
+import CropSize from '@/components/CropSize.vue' //* 裁切尺寸設定
 export default {
 
   components: {
     ProgressBar,
-    PerviewImg
+    PerviewImg,
+    CropImg,
+    CropSize
   },
 
   props: {
@@ -45,19 +61,27 @@ export default {
     }
   },
 
+  computed: {
+    uploadSuccess () {
+      return this.status === this.uploadStatus.success
+    }
+  },
+
   data () {
     return {
       file: {},
       reader: '',
       imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif'],
-      progressBarShow: 0,
+      status: 0,
       uploadStatus: {
         null: 0,
         success: 1,
         fail: 2
       },
       accept: '.jpg, .png, .svg, .gif, .jpeg', //* 上傳時能顯示的檔案類型
-      resolutionValidate: false
+      resolutionValidate: false,
+      cropSize: {},
+      fixedSize: false
     }
   },
 
@@ -106,6 +130,17 @@ export default {
       name.shift()
       const newFileName = name.join('').slice(0, 30) //* 取30位隨機碼
       return newFileName
+    },
+    getCropSize (cropSize) {
+      this.cropSize.width = cropSize.width
+      this.cropSize.height = cropSize.height
+    },
+    getCropType (cropType) {
+      if (cropType === '自由裁切') {
+        this.fixedSize = false
+      } else if (cropType === '限制裁切寬高') {
+        this.fixedSize = true
+      }
     },
     getPreviewImgUrl (e) {
       const file = e.target.files[0]
@@ -160,13 +195,13 @@ export default {
     },
     //* 上傳回饋
     failFeedback (content) {
-      this.progressBarShow = this.uploadStatus.fail
+      this.status = this.uploadStatus.fail
       this.clearPreviewImgUrl()
       this.$refs.uploadResult.textContent = content
       this.$refs.uploadResult.className = 'fail text-danger fst-italic'
     },
     successFeedback (e) {
-      this.progressBarShow = this.uploadStatus.success
+      this.status = this.uploadStatus.success
       this.$refs.uploadResult.textContent = '上傳成功！'
       this.$refs.uploadResult.className = 'success text-success'
     }
