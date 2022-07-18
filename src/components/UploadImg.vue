@@ -3,7 +3,7 @@
   <input type="file" id="file" name="file" @change="getFileInfo" :accept="accept">
 
   <!-- 進度條 -->
-  <div class="my-2" v-if="uploadSuccess">
+  <div v-if="uploadSuccess" class="my-2">
     <ProgressBar ref="progressBar"></ProgressBar>
   </div>
   <!-- 上傳 成功/失敗 回饋 -->
@@ -12,7 +12,7 @@
   </div>
   <!-- 檔案預覽 -->
   <div v-if="uploadSuccess" class="my-3">
-    <PerviewImg :imgUrl="file.PerviewImgUrl"></PerviewImg>
+    <PerviewImg :imgUrl="file.PerviewImgUrl" ref="preview"></PerviewImg>
   </div>
   <!-- 裁切模式、裁切尺寸 -->
     <div v-if="uploadSuccess" class="my-5">
@@ -101,6 +101,7 @@ export default {
       }
       const sizeValidate = this.checkSize(size)
       if (!sizeValidate) return
+
       //* 驗證通過
       this.successFeedback(e)
       this.getProgressBar()
@@ -118,10 +119,12 @@ export default {
           // 計算完成百分比
           const percent = (event.loaded / event.total) * 100
           // 將值設定為進度元件
-          const pBarVal = this.$refs.progressBar.$refs.progress
-          const pBarLabel = this.$refs.progressBar.$refs.progressLabel
-          pBarVal.value = percent
-          pBarLabel.innerHTML = Math.round(percent) + '%'
+          const pBarVal = this.$refs.progressBar?.$refs.progress
+          const pBarLabel = this.$refs.progressBar?.$refs.progressLabel
+          if (pBarVal && pBarLabel) {
+            pBarVal.value = percent
+            pBarLabel.innerHTML = Math.round(percent) + '%'
+          }
         }
       })
     },
@@ -161,6 +164,7 @@ export default {
       }).then(function (heicToJpgResult) {
         // 后续上传逻辑
         that.file.PerviewImgUrl = URL.createObjectURL(heicToJpgResult)
+        that.checkHeicResolution()
       })
     },
     //* 檢查圖片解析度
@@ -186,15 +190,31 @@ export default {
       }
       this.reader.readAsDataURL(file)
     },
+    //* 檢查 Heic 檔的解析度
+    checkHeicResolution () {
+      setTimeout(() => {
+        const width = this.$refs.preview.$refs.previewImg.naturalWidth
+        const height = this.$refs.preview.$refs.previewImg.naturalHeight
+        console.log(width)
+        console.log(height)
+        const result = width < this.width && height < this.height
+        if (!result) {
+          this.failFeedback(`圖片寬高須低於${this.width}*${this.height}！`)
+          this.resolutionValidate = false
+        } else if (result) {
+          this.resolutionValidate = true
+        }
+      })
+    },
     checkType (type, file) {
-      if (type === 'heic' || type === 'heif') {
-        this.heic2Jpeg(file)
-      }
       const result = this.type.includes(type)
       if (!result) {
         this.failFeedback(`請上傳 ${this.type} 的檔案，您上傳的是 ${type}檔`)
         return false
       } else if (result) {
+        if (type === 'heic' || type === 'heif') {
+          this.heic2Jpeg(file)
+        }
         return true
       }
     },
