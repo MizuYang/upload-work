@@ -195,8 +195,6 @@ export default {
       setTimeout(() => {
         const width = this.$refs.preview.$refs.previewImg.naturalWidth
         const height = this.$refs.preview.$refs.previewImg.naturalHeight
-        console.log(width)
-        console.log(height)
         const result = width < this.width && height < this.height
         if (!result) {
           this.failFeedback(`圖片寬高須低於${this.width}*${this.height}！`)
@@ -204,7 +202,7 @@ export default {
         } else if (result) {
           this.resolutionValidate = true
         }
-      })
+      }, 500)
     },
     checkType (type, file) {
       const result = this.type.includes(type)
