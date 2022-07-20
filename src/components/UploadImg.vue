@@ -12,7 +12,7 @@
   </div>
   <!-- 檔案預覽 -->
   <div v-if="uploadSuccess" class="my-3">
-    <PerviewImg :imgUrl="file.PerviewImgUrl" ref="preview"></PerviewImg>
+    <PerviewImg :imgUrl="file.perviewImgUrl" ref="preview"></PerviewImg>
   </div>
   <!-- 裁切模式、裁切尺寸 -->
     <div v-if="uploadSuccess" class="my-5">
@@ -21,8 +21,16 @@
   <!-- 圖片裁切 -->
   <div v-if="uploadSuccess" class="my-5">
     <div class="my-3">
-      <CropImg :imgUrl="file.PerviewImgUrl" :cropW="cropSize.width" :cropH="cropSize.height" :fixedSize="fixedSize"></CropImg>
+      <CropImg :imgUrl="file.perviewImgUrl" :cropW="cropSize.width" :cropH="cropSize.height" :fixedSize="fixedSize" @getCropUrl="getCropUrl" @getOriginUrl="getOriginUrl"></CropImg>
     </div>
+  </div>
+
+  <div class="my-5">
+    <UploaderView></UploaderView>
+  </div>
+
+  <div v-if="uploadSuccess" class="my-5">
+    <button class="btn btn-primary" type="button" @click="$emit('upload', file)">確認上傳</button>
   </div>
 </template>
 
@@ -31,14 +39,16 @@ import ProgressBar from '@/components/ProgressBar.vue' //* 進度條
 import PerviewImg from '@/components/PreviewImg.vue' //* 圖片預覽
 import CropImg from '@/components/CropImg.vue' //* 圖片裁切
 import CropSize from '@/components/CropSize.vue' //* 裁切尺寸設定
-import heic2any from 'heic2any'
+import heic2any from 'heic2any' //* 轉檔
+import UploaderView from '@/components/UploaderView.vue'
 export default {
 
   components: {
     ProgressBar,
     PerviewImg,
     CropImg,
-    CropSize
+    CropSize,
+    UploaderView
   },
 
   props: {
@@ -61,6 +71,8 @@ export default {
       default: 500
     }
   },
+
+  emits: ['upload'],
 
   computed: {
     uploadSuccess () {
@@ -97,21 +109,36 @@ export default {
       if (!typeValidate) return
       //* 若為圖檔，驗證寬高(解析度)
       if (this.imgType.includes(type)) {
-        this.checkResolution(file)
+        this.checkResolution(file).then((res) => {
+          console.log(res)
+          // if (!res) return
+        })
+        if (type === 'heic' || type === 'heif') {
+          this.checkHeicResolution()
+        }
       }
       const sizeValidate = this.checkSize(size)
       if (!sizeValidate) return
 
-      //* 驗證通過
-      this.successFeedback(e)
-      this.getProgressBar()
-      //* 取得圖片資訊
-      const name = file.name.split('.')[0]
-      const lastModifiedDate = file.lastModifiedDate.toLocaleString()
-      const uploadDate = new Date().toLocaleString()
-      const newFileName = this.getNewFileName()
-      this.file = { uploadDate, name, newFileName, size, type, lastModifiedDate }
-      this.getPreviewImgUrl(e) //* 在這取得 url 才不會上面的file被覆蓋
+      Promise.all([typeValidate, sizeValidate])
+        .then((res) => {
+          console.log(res)
+          if (type === 'heic' || type === 'heif') {
+            this.heic2Jpeg(file) //* 轉檔
+          }
+          //* 驗證通過
+          this.successFeedback(e)
+          this.getProgressBar()
+          //* 取得圖片資訊
+          const name = file.name.split('.')[0]
+          const lastModifiedDate = file.lastModifiedDate.toLocaleString()
+          const uploadDate = new Date().toLocaleString()
+          const newFileName = this.getNewFileName()
+          const perviewImgUrl = this.getPreviewImgUrl(e)
+          this.file = { uploadDate, name, newFileName, size, type, lastModifiedDate, perviewImgUrl, file }
+          // this.getPreviewImgUrl(e) //* 在這取得 url 才不會上面的file被覆蓋
+          console.log(this.file)
+        })
     },
     getProgressBar () {
       this.reader.addEventListener('progress', (event) => {
@@ -148,47 +175,56 @@ export default {
     },
     getPreviewImgUrl (e) {
       const file = e.target.files[0]
-      const url = URL.createObjectURL(file)
-      this.file.PerviewImgUrl = url
+      const perviewImgUrl = URL.createObjectURL(file)
+      // this.file.perviewImgUrl = url
+      return perviewImgUrl
+    },
+    getCropUrl (cropUrl) {
+      this.file.perviewImgUrl = cropUrl
+    },
+    getOriginUrl (originUrl) {
+      this.file.perviewImgUrl = originUrl
     },
     clearPreviewImgUrl () {
-      this.file.PerviewImgUrl = ''
+      this.file.perviewImgUrl = ''
     },
     //* 若圖檔為 heic 或 heif 則轉檔為 JPG
     heic2Jpeg (file) {
-      const that = this
       heic2any({
         blob: file, //* 将heic转换成一个buffer数组的图片
         toType: 'image/jpeg', //* 要转化成具体的图片格式，可以是png/gif
         quality: 1 //* 图片的质量，参数在0-1之间
-      }).then(function (heicToJpgResult) {
+      }).then((heicToJpgResult) => {
         // 后续上传逻辑
-        that.file.PerviewImgUrl = URL.createObjectURL(heicToJpgResult)
-        that.checkHeicResolution()
+        this.file.perviewImgUrl = URL.createObjectURL(heicToJpgResult)
       })
     },
     //* 檢查圖片解析度
     checkResolution (file) {
-      this.resolutionValidate = false
-      this.reader.onload = (e) => {
-        const data = e.target.result //* 取得 Base64
-        // 加载图片获取图片真实宽度和高度
-        const image = new Image()
-        image.onload = () => {
-          const width = image.width
-          const height = image.height
-          const result = width < this.width && height < this.height
-          if (!result) {
-            this.failFeedback(`圖片寬高須低於${this.width}*${this.height}！`)
-            this.resolutionValidate = false
-          } else if (result) {
-            this.resolutionValidate = true
+      return new Promise((resolve, reject) => {
+        this.resolutionValidate = false
+        this.reader.onload = (e) => {
+          const data = e.target.result //* 取得 Base64
+          // 加载图片获取图片真实宽度和高度
+          const image = new Image()
+          image.onload = () => {
+            const width = image.width
+            const height = image.height
+            const result = width < this.width && height < this.height
+            if (!result) {
+              this.failFeedback(`圖片寬高須低於${this.width}*${this.height}！`)
+              this.resolutionValidate = false
+              resolve(false)
+            } else if (result) {
+              this.resolutionValidate = true
+              resolve(true)
+            }
           }
+          if (this.resolutionValidate) { return } //* 驗證失敗中斷程式碼
+          image.src = data
         }
-        if (this.resolutionValidate) { return } //* 驗證失敗中斷程式碼
-        image.src = data
-      }
-      this.reader.readAsDataURL(file)
+        this.reader.readAsDataURL(file)
+      })
     },
     //* 檢查 Heic 檔的解析度
     checkHeicResolution () {
@@ -210,9 +246,9 @@ export default {
         this.failFeedback(`請上傳 ${this.type} 的檔案，您上傳的是 ${type}檔`)
         return false
       } else if (result) {
-        if (type === 'heic' || type === 'heif') {
-          this.heic2Jpeg(file)
-        }
+        // if (type === 'heic' || type === 'heif') {
+        //   this.heic2Jpeg(file)
+        // }
         return true
       }
     },

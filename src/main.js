@@ -3,11 +3,14 @@ import 'bootstrap'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+import uploader from 'vue-simple-uploader'
+
 import App from './App.vue'
 import router from './router'
 
 const app = createApp(App)
 
+app.use(uploader)
 app.use(router)
 app.use(VueAxios, axios)
 

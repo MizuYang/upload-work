@@ -1,5 +1,6 @@
 <template>
     <input type="button" @click="cropShow = !cropShow" :value="cropShow ? '關閉裁切': '開啟裁切'" class="btn btn-primary">
+
     <div v-if="cropShow" class="row height my-3">
       <div class="col-5">
         <h4>裁切前</h4>
@@ -31,6 +32,11 @@
       </div>
       <div class="col-2 my-auto">
         <button class="btn btn-primary" type="button" @click="getCropImgUrl">裁切</button>
+        <div class="my-2">
+          <button v-if="cropImgUrl" class="btn btn-primary" type="button" @click="getCropUrl" ref="confirmBtn">確認裁切</button>
+          <button class="btn btn-primary d-none" type="button"
+          @click="getOriginUrl" ref="originBtn">恢復裁切</button>
+        </div>
       </div>
       <div class="col-5 m-auto">
         <h4>裁切後</h4>
@@ -67,6 +73,9 @@ export default {
     }
   },
 
+  emits: ['getCropUrl', 'getOriginUrl'],
+  // emits: ['getCropUrl'],
+
   watch: {
     cropW () {
       this.option.autoCropWidth = this.cropW
@@ -101,6 +110,7 @@ export default {
         // fixedNumber: [1, 1] //* 截图框的宽高比例
       },
       cropImgUrl: '',
+      originUrl: '',
       cropShow: false
     }
   },
@@ -113,7 +123,24 @@ export default {
           this.cropImgUrl = cropImgUrl
         })
       })
+    },
+    //* 確認裁切
+    getCropUrl () {
+      this.$refs.confirmBtn.classList.add('d-none')
+      this.$refs.originBtn.classList.remove('d-none')
+      console.log(this.$refs.originBtn)
+      this.$emit('getCropUrl', this.cropImgUrl)
+    },
+    //* 恢復裁切
+    getOriginUrl () {
+      this.$refs.originBtn.classList.add('d-none')
+      this.$refs.confirmBtn.classList.remove('d-none')
+      this.$emit('getOriginUrl', this.originUrl)
     }
+  },
+
+  mounted () {
+    this.originUrl = this.imgUrl
   }
 
 }
