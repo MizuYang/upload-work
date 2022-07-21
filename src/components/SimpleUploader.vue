@@ -31,6 +31,7 @@ export default {
 
   data () {
     return {
+      file: [],
       uploader: null,
       options: {
         // target: '//localhost:3000/upload', // '//jsonplaceholder.typicode.com/posts/',
@@ -49,19 +50,21 @@ export default {
         paused: '暫停中',
         waiting: '等待中'
       },
+      // previewImg: '',
       //* 驗證條件
       imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'heic', 'heif'],
-      size: 153600,
-      // previewImg: '',
-      width: 150,
-      height: 150
+      size: 153600
+      // width: 150,
+      // height: 150
 
     }
   },
 
+  //! 取得 file 物件
+  //! 完成其他需求，例：預覽、圖片裁切、新檔案名字(30碼)
+
   methods: {
     async onFileAdded (file) {
-      console.log(file)
       //* 檢查格式
       const type = file.name.split('.').pop()
       if (!this.imgType.includes(type)) {
@@ -112,7 +115,6 @@ export default {
       file.params = this.params
       // Bus.$emit('fileAdded')
     },
-
     getImgSize (file) {
       return new Promise((resolve, reject) => {
         const url = URL.createObjectURL(file.file)
@@ -126,28 +128,42 @@ export default {
         }
       })
     },
-
     //* 若圖檔為 heic 或 heif 則轉檔為 JPG
     heic2Jpeg (file) {
       return new Promise((resolve, reject) => {
         heic2any({
-          blob: file, //* 将heic转换成一个buffer数组的图片
-          toType: 'image/jpeg', //* 要转化成具体的图片格式，可以是png/gif
-          quality: 1 //* 图片的质量，参数在0-1之间
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 1
         }).then((heicToJpgResult) => {
-          console.log('heicToJpgResult', heicToJpgResult)
-          console.log(this)
+          this.file.push(heicToJpgResult)
           // 后续上传逻辑
-          const url = URL.createObjectURL(heicToJpgResult) //* 取得網址
+          // //* 將 files 裡的 heic 檔換成轉檔後的 jepg 檔
+          // const name = file.name.split('.')[0]
+          // const heic2JpegFileIndex = this.$refs.uploader.files.findIndex(item => {
+          //   const fileName = item.name.split('.')[0]
+          //   return name === fileName
+          // })
+          // this.$refs.uploader.files.splice(heic2JpegFileIndex, 1, heicToJpgResult)
+          const url = URL.createObjectURL(heicToJpgResult)
           resolve(url)
         })
       })
     },
-
     onFileProgress (rootFile, file, chunk) {
       console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
     },
     onFileSuccess (rootFile, file, response, chunk) {
+      // console.log('rootFile', rootFile)
+      // console.log('file', file)
+      const isHeic = 'heic'
+      if (file.name.includes(isHeic)) return
+
+      //* 如果沒被中斷上傳，才丟到 file
+      if (!file.aborted) {
+        this.file.push(file)
+      }
+
       // const res = JSON.parse(response)
       // // 服务器自定义的错误（即虽返回200，但是是错误的情况），这种错误是Uploader无法拦截的
       // if (!res.result) {
@@ -302,8 +318,10 @@ export default {
     this.$nextTick(() => {
       // window.uploader = this.uploader.uploader
     })
-    // setInterval(() => {
-    // }, 3500)
+    setInterval(() => {
+      // console.log(this.$refs.uploader.files)
+      console.log(this.file)
+    }, 3500)
   }
 
 }
