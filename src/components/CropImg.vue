@@ -34,7 +34,9 @@
         <button class="btn btn-primary" type="button" @click="getCropImgUrl">裁切</button>
         <div class="my-2">
           <button v-if="cropImgUrl" class="btn btn-primary" type="button" @click="getCropUrl" ref="confirmBtn">確認裁切</button>
-          <button class="btn btn-primary d-none" type="button"
+        </div>
+        <div class="my-2">
+          <button class="btn btn-primary btn-secondary d-none" type="button"
           @click="getOriginUrl" ref="originBtn">恢復裁切</button>
         </div>
       </div>
@@ -74,7 +76,6 @@ export default {
   },
 
   emits: ['getCropUrl', 'getOriginUrl'],
-  // emits: ['getCropUrl'],
 
   watch: {
     cropW () {
@@ -110,7 +111,7 @@ export default {
         // fixedNumber: [1, 1] //* 截图框的宽高比例
       },
       cropImgUrl: '',
-      originUrl: '',
+      // originUrl: '',
       cropShow: false
     }
   },
@@ -126,16 +127,13 @@ export default {
     },
     //* 確認裁切
     getCropUrl () {
-      this.$refs.confirmBtn.classList.add('d-none')
       this.$refs.originBtn.classList.remove('d-none')
-      console.log(this.$refs.originBtn)
       this.$emit('getCropUrl', this.cropImgUrl)
     },
     //* 恢復裁切
     getOriginUrl () {
       this.$refs.originBtn.classList.add('d-none')
-      this.$refs.confirmBtn.classList.remove('d-none')
-      this.$emit('getOriginUrl', this.originUrl)
+      this.$emit('getOriginUrl')
     }
   },
 

@@ -42,7 +42,6 @@ export default {
 
   methods: {
     upload (file) {
-      console.log('hello')
       console.log(file)
     }
   }

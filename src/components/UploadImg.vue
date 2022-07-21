@@ -26,7 +26,7 @@
   </div>
 
   <div class="my-5">
-    <UploaderView></UploaderView>
+    <SimpleUploader ref="uploaderRef" @uploaderSuccess="uploaderSuccess"></SimpleUploader>
   </div>
 
   <div v-if="uploadSuccess" class="my-5">
@@ -40,7 +40,7 @@ import PerviewImg from '@/components/PreviewImg.vue' //* 圖片預覽
 import CropImg from '@/components/CropImg.vue' //* 圖片裁切
 import CropSize from '@/components/CropSize.vue' //* 裁切尺寸設定
 import heic2any from 'heic2any' //* 轉檔
-import UploaderView from '@/components/UploaderView.vue'
+import SimpleUploader from '@/components/SimpleUploader.vue'
 export default {
 
   components: {
@@ -48,7 +48,7 @@ export default {
     PerviewImg,
     CropImg,
     CropSize,
-    UploaderView
+    SimpleUploader
   },
 
   props: {
@@ -94,7 +94,8 @@ export default {
       accept: '.jpg, .png, .svg, .gif, .jpeg', //* 上傳時能顯示的檔案類型
       resolutionValidate: false,
       cropSize: {},
-      fixedSize: false
+      fixedSize: false,
+      tempPreviewImgUrl: ''
     }
   },
 
@@ -120,25 +121,20 @@ export default {
       const sizeValidate = this.checkSize(size)
       if (!sizeValidate) return
 
-      Promise.all([typeValidate, sizeValidate])
-        .then((res) => {
-          console.log(res)
-          if (type === 'heic' || type === 'heif') {
-            this.heic2Jpeg(file) //* 轉檔
-          }
-          //* 驗證通過
-          this.successFeedback(e)
-          this.getProgressBar()
-          //* 取得圖片資訊
-          const name = file.name.split('.')[0]
-          const lastModifiedDate = file.lastModifiedDate.toLocaleString()
-          const uploadDate = new Date().toLocaleString()
-          const newFileName = this.getNewFileName()
-          const perviewImgUrl = this.getPreviewImgUrl(e)
-          this.file = { uploadDate, name, newFileName, size, type, lastModifiedDate, perviewImgUrl, file }
-          // this.getPreviewImgUrl(e) //* 在這取得 url 才不會上面的file被覆蓋
-          console.log(this.file)
-        })
+      if (type === 'heic' || type === 'heif') {
+        this.heic2Jpeg(file) //* 轉檔
+      }
+      //* 驗證通過
+      this.successFeedback(e)
+      this.getProgressBar()
+      //* 取得圖片資訊
+      const name = file.name.split('.')[0]
+      const lastModifiedDate = file.lastModifiedDate.toLocaleString()
+      const uploadDate = new Date().toLocaleString()
+      const newFileName = this.getNewFileName()
+      const perviewImgUrl = this.getPreviewImgUrl(e)
+      this.file = { uploadDate, name, newFileName, size, type, lastModifiedDate, perviewImgUrl, file }
+      console.log(this.file)
     },
     getProgressBar () {
       this.reader.addEventListener('progress', (event) => {
@@ -176,14 +172,14 @@ export default {
     getPreviewImgUrl (e) {
       const file = e.target.files[0]
       const perviewImgUrl = URL.createObjectURL(file)
-      // this.file.perviewImgUrl = url
+      this.tempPreviewImgUrl = perviewImgUrl
       return perviewImgUrl
     },
     getCropUrl (cropUrl) {
       this.file.perviewImgUrl = cropUrl
     },
-    getOriginUrl (originUrl) {
-      this.file.perviewImgUrl = originUrl
+    getOriginUrl () {
+      this.file.perviewImgUrl = this.tempPreviewImgUrl
     },
     clearPreviewImgUrl () {
       this.file.perviewImgUrl = ''
@@ -246,9 +242,6 @@ export default {
         this.failFeedback(`請上傳 ${this.type} 的檔案，您上傳的是 ${type}檔`)
         return false
       } else if (result) {
-        // if (type === 'heic' || type === 'heif') {
-        //   this.heic2Jpeg(file)
-        // }
         return true
       }
     },
