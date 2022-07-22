@@ -16,23 +16,34 @@
 
   <!-- 圖片預覽 -->
   <template v-if="previewImg.length > 0">
-    <ul class="row row-cols-3 g-3 my-3">
-      <li v-for="img in previewImg" :key="img">
-        <img :src="img" alt="" width="300">
+    <ul class="row row-cols-3 g-3 list-unstyled my-3">
+      <li v-for="(img) in previewImg" :key="img">
+        <img :src="img" alt="" width="200" height="200">
+      <!-- 裁切 -->
+      <div class="my-3">
+        <CropImg :imgUrl="img" :cropW="150" :cropH="160" :fixedSize="false" @getCropUrl="getCropUrl" @getOriginUrl="getOriginUrl"></CropImg>
+      </div>
       </li>
     </ul>
   </template>
+
 </template>
 
 <script>
 import SparkMD5 from 'spark-md5'
 import heic2any from 'heic2any'
+import CropImg from '@/components/CropImg.vue' //* 圖片裁切
 export default {
+
+  components: {
+    CropImg
+  },
 
   computed: {
 
     previewImg () {
       const imgUrlArr = []
+      console.log('觸發 computed')
       //* 有檔案才執行
       if (this.file.length === 0) return imgUrlArr
       this.file.forEach(file => {
@@ -85,7 +96,8 @@ export default {
   },
 
   //! 取得 file 物件
-  //! 完成其他需求，例：預覽、圖片裁切、新檔案名字(30碼)
+  //! 元件化
+  //! 完成其他需求，例：圖片裁切
 
   methods: {
     async onFileAdded (file) {
@@ -341,6 +353,17 @@ export default {
         type: 'error',
         duration: 2000
       })
+    },
+    getCropUrl (cropUrl, index) {
+      // console.log(cropUrl)
+      // console.log(cropUrl)
+      // console.log(index)
+      console.log(this.file[0])
+      this.file[0].url = cropUrl
+      // this.file.perviewImgUrl = cropUrl
+    },
+    getOriginUrl () {
+      this.file.perviewImgUrl = this.tempPreviewImgUrl
     }
   },
 
