@@ -14,7 +14,14 @@
     <uploader-list></uploader-list>
   </uploader>
 
-  <!-- <img :src="previewImg" alt=""> -->
+  <!-- 圖片預覽 -->
+  <template v-if="previewImg.length > 0">
+    <ul class="row row-cols-3 g-3 my-3">
+      <li v-for="img in previewImg" :key="img">
+        <img :src="img" alt="" width="300">
+      </li>
+    </ul>
+  </template>
 </template>
 
 <script>
@@ -23,10 +30,27 @@ import heic2any from 'heic2any'
 export default {
 
   computed: {
-    // Uploader实例
-    // uploader () {
-    //   return this.$refs.uploader.uploader
-    // }
+
+    previewImg () {
+      const imgUrlArr = []
+      //* 有檔案才執行
+      if (this.file.length === 0) return imgUrlArr
+      this.file.forEach(file => {
+        const type = file.name.split('.').pop()
+        //* 是圖片才設定預覽
+        if (this.imgType.includes(type)) {
+          //* 若是 Heic 檔就從 heic2Jpeg 來處理 Url
+          if (file.heic) {
+            console.log(file.url)
+            imgUrlArr.push(file.url)
+            return
+          }
+          const url = URL.createObjectURL(file.file)
+          imgUrlArr.push(url)
+        }
+      })
+      return imgUrlArr
+    }
   },
 
   data () {
@@ -50,9 +74,9 @@ export default {
         paused: '暫停中',
         waiting: '等待中'
       },
-      // previewImg: '',
       //* 驗證條件
       imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'heic', 'heif'],
+      // imgType: [],
       size: 153600
       // width: 150,
       // height: 150
@@ -128,24 +152,37 @@ export default {
         }
       })
     },
+    getRandomFileName () {
+      let text = ''
+      const randomLen = 30
+      const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+      for (let i = 0; i < randomLen; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length))
+      }
+      return text
+    },
     //* 若圖檔為 heic 或 heif 則轉檔為 JPG
     heic2Jpeg (file) {
       return new Promise((resolve, reject) => {
+        console.log(file)
+        const name = file.name
         heic2any({
           blob: file,
           toType: 'image/jpeg',
           quality: 1
         }).then((heicToJpgResult) => {
-          this.file.push(heicToJpgResult)
-          // 后续上传逻辑
-          // //* 將 files 裡的 heic 檔換成轉檔後的 jepg 檔
-          // const name = file.name.split('.')[0]
-          // const heic2JpegFileIndex = this.$refs.uploader.files.findIndex(item => {
-          //   const fileName = item.name.split('.')[0]
-          //   return name === fileName
-          // })
-          // this.$refs.uploader.files.splice(heic2JpegFileIndex, 1, heicToJpgResult)
           const url = URL.createObjectURL(heicToJpgResult)
+          console.log('heicToJpgResult', heicToJpgResult)
+
+          //* 將 heic 轉成 jepg 檔後傳至 file
+          this.file.push(heicToJpgResult)
+          const fileLen = this.file.length
+          this.file[fileLen - 1].newFileName = this.getRandomFileName()
+          this.file[fileLen - 1].url = url
+          this.file[fileLen - 1].name = name
+          this.file[fileLen - 1].heic = true //* Heic 檔不在 previewImg 處理的依據
+          // 后续上传逻辑
           resolve(url)
         })
       })
@@ -154,14 +191,16 @@ export default {
       console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
     },
     onFileSuccess (rootFile, file, response, chunk) {
-      // console.log('rootFile', rootFile)
-      // console.log('file', file)
       const isHeic = 'heic'
+      //* heic 會在 heic2Jpeg 傳到 file，而不會在這上傳
+      //* (因轉檔關係，轉檔後的檔案無法透過套件自動上傳)
       if (file.name.includes(isHeic)) return
 
       //* 如果沒被中斷上傳，才丟到 file
       if (!file.aborted) {
         this.file.push(file)
+        const fileLen = this.file.length
+        this.file[fileLen - 1].newFileName = this.getRandomFileName()
       }
 
       // const res = JSON.parse(response)
@@ -197,10 +236,7 @@ export default {
         type: 'error'
       })
     },
-    /**
-             * 计算md5，实现断点续传及秒传
-             * @param file
-             */
+    //* 计算md5，实现断点续传及秒传
     computeMD5 (file) {
       const fileReader = new FileReader()
       const time = new Date().getTime()
@@ -257,11 +293,7 @@ export default {
       this.uploader.cancel()
       this.panelShow = false
     },
-    /**
-             * 新增的自定义的状态: 'md5'、'transcoding'、'failed'
-             * @param id
-             * @param status
-             */
+    //* 新增的自定义的状态: 'md5'、'transcoding'、'failed'
     statusSet (id, status) {
       const statusMap = {
         md5: {
@@ -319,9 +351,9 @@ export default {
       // window.uploader = this.uploader.uploader
     })
     setInterval(() => {
-      // console.log(this.$refs.uploader.files)
       console.log(this.file)
-    }, 3500)
+      // this.getRandomFileName()
+    }, 2500)
   }
 
 }
