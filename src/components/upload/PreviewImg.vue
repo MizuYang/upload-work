@@ -1,44 +1,63 @@
 <template>
-    <!-- <template v-if="previewImg.length > 0"> -->
-    <ul class="row row-cols-3 g-3 list-unstyled my-3">
-      <li v-for="(img) in previewImg" :key="img">
-        <img :src="img" alt="" width="200" height="200">
-      </li>
-    </ul>
-  <!-- </template> -->
+    <template v-if="previewImg.length > 0">
+      <!-- 預覽圖片列表 -->
+      <ul class="row row-cols-3 g-3 list-unstyled my-3">
+        <li v-for="(img) in previewImg" :key="img" class="text-center">
+          <img :src="img" alt="上傳的圖片預覽" width="200" height="200">
+          <div class="my-3">
+            <button type="button" class="btn btn-primary" @click="$refs.cropImgModal.openModal(img)">裁切</button>
+          </div>
+        </li>
+      </ul>
+      <!-- Modal -->
+      <CropImgModal ref="cropImgModal"></CropImgModal>
+    </template>
 </template>
 
 <script>
-
+import CropImgModal from '@/components/modal/CropImgModal.vue' //* Modal
 export default {
   components: {
+    CropImgModal
   },
 
-  data () {
-    return {
+  props: {
+    file: {
+      type: Object
+    },
+    imgType: {
+      imgType: Array
     }
   },
 
-  watch: {
-  },
-
-  methods: {
-    // getCropUrl (cropUrl, index) {
-    //   // console.log(cropUrl)
-    //   // console.log(index)
-    //   console.log(this.file[0])
-    //   this.file[0].url = cropUrl
-    //   // this.file.perviewImgUrl = cropUrl
-    // },
-    // getOriginUrl () {
-    //   this.file.perviewImgUrl = this.tempPreviewImgUrl
-    // }
+  computed: {
+    previewImg () {
+      const imgUrlArr = []
+      //* 有檔案才執行
+      if (this.file.length === 0) return imgUrlArr
+      this.file.forEach(file => {
+        const type = file.name.split('.').pop()
+        //* 是圖片才設定預覽
+        if (this.imgType.includes(type)) {
+          //* 若是 Heic 檔就從 heic2Jpeg 來處理 Url
+          if (file.heic) {
+            console.log(file.url)
+            imgUrlArr.push(file.url)
+            return
+          }
+          const url = URL.createObjectURL(file.file)
+          imgUrlArr.push(url)
+        }
+      })
+      return imgUrlArr
+    }
   },
 
   mounted () {
+    setInterval(() => {
+      // console.log('預覽圖片：', this.file)
+    }, 2500)
   }
 
 }
 </script>
-
-<style lang='scss' scope></style>

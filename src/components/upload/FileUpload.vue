@@ -20,43 +20,20 @@
   </div>
 
   <!-- 圖片預覽 -->
-<!-- <PreviewImg></PreviewImg> -->
+  <PreviewImg :file="file" :imgType="imgType"></PreviewImg>
 
 </template>
 
 <script>
-// import PreviewImg from '@/components/upload/PreviewImg.vue'
+import PreviewImg from '@/components/upload/PreviewImg.vue'
 import SparkMD5 from 'spark-md5'
 import heic2any from 'heic2any'
 // import CropImg from '@/components/CropImg.vue' //* 圖片裁切
 export default {
 
   components: {
-    // PreviewImg
+    PreviewImg
     // CropImg
-  },
-
-  computed: {
-    previewImg () {
-      const imgUrlArr = []
-      //* 有檔案才執行
-      if (this.file.length === 0) return imgUrlArr
-      this.file.forEach(file => {
-        const type = file.name.split('.').pop()
-        //* 是圖片才設定預覽
-        if (this.imgType.includes(type)) {
-          //* 若是 Heic 檔就從 heic2Jpeg 來處理 Url
-          if (file.heic) {
-            console.log(file.url)
-            imgUrlArr.push(file.url)
-            return
-          }
-          const url = URL.createObjectURL(file.file)
-          imgUrlArr.push(url)
-        }
-      })
-      return imgUrlArr
-    }
   },
 
   props: {
@@ -143,10 +120,9 @@ export default {
         this.failFeedback(err)
         throw (err)
       }
-      // console.log(1)
 
       //* 若 圖片模式+限制圖片寬高 > 檢查檢析度
-      if (this.validateResolution && this.uploadMode === '圖片') {
+      if (this.uploadMode === '圖片') {
         if (type === 'heic' || type === 'heif') {
         //* heic 先轉檔才取的到寬高，所以另外在這處理
           await this.heic2Jpeg(file.file).then(url => {
@@ -154,29 +130,31 @@ export default {
             const img = new Image()
             img.src = url
             img.onload = () => {
-              if (img.width > this.validateW || img.height > this.validateH) {
-                file.cancel()
-                const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
-                this.failFeedback(err)
-                throw err
+              if (this.validateResolution) {
+                if (img.width > this.validateW || img.height > this.validateH) {
+                  file.cancel()
+                  const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
+                  this.failFeedback(err)
+                  throw err
+                }
               }
             }
           })
         } else {
           await this.getImgSize(file)
             .then(img => {
-            // console.log(2)
-              if (img.width > this.validateW || img.height > this.validateH) {
-                file.cancel()
-                const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
-                this.failFeedback(err)
-                throw err
+              if (this.validateResolution) {
+                if (img.width > this.validateW || img.height > this.validateH) {
+                  file.cancel()
+                  const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
+                  this.failFeedback(err)
+                  throw err
+                }
               }
             })
         }
       }
 
-      // console.log(3)
       //* 驗證成功
       this.successFeedback()
       this.panelShow = true
@@ -415,13 +393,11 @@ export default {
   },
 
   mounted () {
-    // const uploader = this.$refs.uploader
-    // console.log(uploader)
     this.$nextTick(() => {
       // window.uploader = this.uploader.uploader
     })
     setInterval(() => {
-      console.log(this.file)
+      // console.log(this.file)
     }, 2500)
   }
 

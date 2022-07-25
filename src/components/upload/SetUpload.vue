@@ -45,7 +45,7 @@ export default {
   data () {
     return {
       options: {
-        uploadMode: '一般檔案',
+        uploadMode: '圖片',
         validateSize: 153600,
         validateResolution: false,
         validateW: 0,
