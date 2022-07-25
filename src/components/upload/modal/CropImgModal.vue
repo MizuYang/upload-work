@@ -7,13 +7,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p>裁切</p>
-        <!-- <img :src="img" alt="要裁切的圖片"> -->
-        <CropImg :imgUrl="imgUrl"></CropImg>
+        <!-- 圖片裁切 -->
+        <CropImg :imgUrl="imgUrl" ref="cropImg"></CropImg>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-primary">確定裁切</button>
+        <button type="button" class="btn btn-primary d-none" ref="confirmCrop" @click="crop">確定裁切</button>
       </div>
     </div>
   </div>
@@ -32,7 +31,8 @@ export default {
   data () {
     return {
       modal: '',
-      imgUrl: ''
+      imgUrl: '',
+      currentImgIndex: -1
     }
   },
 
@@ -40,9 +40,21 @@ export default {
   },
 
   methods: {
-    openModal (imgUrl) {
+    openModal (imgUrl, index) {
+      this.currentImgIndex = index
       this.imgUrl = imgUrl
       this.modal.show()
+    },
+    crop () {
+      const cropImg = this.$refs.cropImg.getCropUrl()
+      //* 變更圖片預覽
+      this.$parent.previewImg[this.currentImgIndex] = cropImg
+      //* 將裁切後的圖傳回外層 file
+      this.$parent.$parent.file[this.currentImgIndex].cropImgUrl = cropImg
+      console.log(this.$parent.$parent.file)
+
+      this.$refs.confirmCrop.classList.add('d-none')
+      this.modal.hide()
     }
   },
 

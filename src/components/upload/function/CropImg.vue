@@ -1,9 +1,8 @@
 <template>
     <!-- <input type="button" @click="cropShow = !cropShow" :value="cropShow ? '關閉裁切': '開啟裁切'" class="btn btn-primary"> -->
 
-    <div v-if="cropShow" class="row height my-3">
+    <div class="row height my-3">
       <div class="col-5">
-        <h4>裁切前</h4>
         <VueCropper
           ref="cropper"
           :img="imgUrl"
@@ -33,7 +32,7 @@
       <div class="col-2 my-auto">
         <button class="btn btn-primary" type="button" @click="getCropImgUrl">裁切</button>
         <div class="my-2">
-          <button v-if="cropImgUrl" class="btn btn-primary" type="button" @click="getCropUrl" ref="confirmBtn">確認裁切</button>
+          <!-- <button v-if="cropImgUrl" class="btn btn-primary" type="button" @click="getCropUrl" ref="confirmBtn">確認裁切</button> -->
         </div>
         <div class="my-2">
           <button class="btn btn-primary btn-secondary d-none" type="button"
@@ -41,7 +40,6 @@
         </div>
       </div>
       <div class="col-5 m-auto">
-        <h4>裁切後</h4>
         <img v-if="cropImgUrl" :src="cropImgUrl" alt="裁切後的圖片">
       </div>
     </div>
@@ -60,24 +58,29 @@ export default {
   props: {
     imgUrl: {
       type: String
-    },
-    cropW: {
-      type: Number,
-      default: 160
-    },
-    cropH: {
-      type: Number,
-      default: 150
-    },
-    fixedSize: {
-      type: Boolean,
-      default: false
     }
+    // cropW: {
+    //   type: Number,
+    //   default: 160
+    // },
+    // cropH: {
+    //   type: Number,
+    //   default: 150
+    // },
+    // fixedSize: {
+    //   type: Boolean,
+    //   default: false
+    // }
   },
 
-  emits: ['getCropUrl', 'getOriginUrl'],
+  // emits: ['getCropUrl', 'getOriginUrl'],
 
   watch: {
+    imgUrl () {
+      this.cropImgUrl = '' //* 裁切預覽初始化
+      this.originUrl = this.imgUrl
+      this.option.img = this.imgUrl
+    },
     cropW () {
       this.option.autoCropWidth = this.cropW
     },
@@ -92,7 +95,7 @@ export default {
   data () {
     return {
       option: {
-        // img: 'https://avatars2.githubusercontent.com/u/15681693?s=460&v=4',
+        img: '',
         size: 1,
         full: false, //* 是否输出原图比例的截图
         outputType: 'jpg', //* 裁剪生成图片的格式
@@ -122,13 +125,13 @@ export default {
       this.$nextTick(() => {
         this.$refs.cropper.getCropData(cropImgUrl => {
           this.cropImgUrl = cropImgUrl
+          this.$parent.$refs.confirmCrop.classList.remove('d-none')
         })
       })
     },
     //* 確認裁切
     getCropUrl () {
-      this.$refs.originBtn.classList.remove('d-none')
-      this.$emit('getCropUrl', this.cropImgUrl)
+      return this.cropImgUrl
     },
     //* 恢復裁切
     getOriginUrl () {

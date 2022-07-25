@@ -8,7 +8,7 @@
     <br /> <br />
     <!-- 限制檔案大小 -->
     <label for="validateSize">檔案限制大小：</label>
-    <input id="validateSize" type="number" placeholder="檔案大小限制" v-model="options.validateSize">
+    <input id="validateSize" type="number" placeholder="檔案大小限制" v-model="options.validateSize" oninput="value=value.replace(/[^\d]/g,'')">
     <br /> <br />
     <!-- 限制圖片寬高 -->
     <div v-if="options.uploadMode === '圖片'">
@@ -16,10 +16,10 @@
       <label for="resolution">我要限制圖片寬高</label>
       <div v-if="options.validateResolution" class="my-3">
         <label for="width">寬：</label>
-        <input type="number" id="width" class="inputSize" v-model="options.validateW">
+        <input type="number" id="width" class="inputSize" v-model="options.validateW" oninput="value=value.replace(/[^\d]/g,'')">
         <br /> <br />
         <label for="height">高：</label>
-        <input type="number" id="height" class="inputSize" v-model="options.validateH">
+        <input type="number" id="height" class="inputSize" v-model="options.validateH" oninput="value=value.replace(/[^\d]/g,'')">
       </div>
     </div>
 </template>

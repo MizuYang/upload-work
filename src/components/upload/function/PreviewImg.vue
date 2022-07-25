@@ -2,10 +2,10 @@
     <template v-if="previewImg.length > 0">
       <!-- 預覽圖片列表 -->
       <ul class="row row-cols-3 g-3 list-unstyled my-3">
-        <li v-for="(img) in previewImg" :key="img" class="text-center">
+        <li v-for="(img, index) in previewImg" :key="`preview${index}`" class="text-center">
           <img :src="img" alt="上傳的圖片預覽" width="200" height="200">
           <div class="my-3">
-            <button type="button" class="btn btn-primary" @click="$refs.cropImgModal.openModal(img)">裁切</button>
+            <button type="button" class="btn btn-primary" @click="$refs.cropImgModal.openModal(img, index)">裁切</button>
           </div>
         </li>
       </ul>
@@ -32,24 +32,29 @@ export default {
 
   computed: {
     previewImg () {
-      const imgUrlArr = []
       //* 有檔案才執行
-      if (this.file.length === 0) return imgUrlArr
+      if (this.file.length === 0) return this.imgUrlArr
+      this.imgUrlArr = [] // eslint-disable-line
       this.file.forEach(file => {
         const type = file.name.split('.').pop()
         //* 是圖片才設定預覽
         if (this.imgType.includes(type)) {
           //* 若是 Heic 檔就從 heic2Jpeg 來處理 Url
           if (file.heic) {
-            console.log(file.url)
-            imgUrlArr.push(file.url)
+            this.imgUrlArr.push(file.url)
             return
           }
           const url = URL.createObjectURL(file.file)
-          imgUrlArr.push(url)
+          this.imgUrlArr.push(url)
         }
       })
-      return imgUrlArr
+      return this.imgUrlArr
+    }
+  },
+
+  data () {
+    return {
+      imgUrlArr: []
     }
   },
 
