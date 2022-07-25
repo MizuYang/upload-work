@@ -7,12 +7,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <!-- 裁切設定 -->
+        <SetCropImg></SetCropImg>
         <!-- 圖片裁切 -->
         <CropImg :imgUrl="imgUrl" ref="cropImg"></CropImg>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-primary d-none" ref="confirmCrop" @click="crop">確定裁切</button>
+        <button type="button" class="btn btn-primary d-none" ref="confirmCrop" @click="confirmCrop">確定裁切</button>
       </div>
     </div>
   </div>
@@ -23,9 +25,11 @@
 <script>
 import Modal from 'bootstrap/js/dist/modal.js'
 import CropImg from '@/components/upload/function/CropImg.vue' //* 圖片裁切
+import SetCropImg from '@/components/upload/set/SetCropImg.vue'
 export default {
   components: {
-    CropImg
+    CropImg,
+    SetCropImg
   },
 
   data () {
@@ -36,22 +40,18 @@ export default {
     }
   },
 
-  watch: {
-  },
-
   methods: {
     openModal (imgUrl, index) {
       this.currentImgIndex = index
       this.imgUrl = imgUrl
       this.modal.show()
     },
-    crop () {
+    confirmCrop () {
       const cropImg = this.$refs.cropImg.getCropUrl()
       //* 變更圖片預覽
       this.$parent.previewImg[this.currentImgIndex] = cropImg
       //* 將裁切後的圖傳回外層 file
       this.$parent.$parent.file[this.currentImgIndex].cropImgUrl = cropImg
-      console.log(this.$parent.$parent.file)
 
       this.$refs.confirmCrop.classList.add('d-none')
       this.modal.hide()
@@ -60,6 +60,11 @@ export default {
 
   mounted () {
     this.modal = new Modal(this.$refs.modal)
+    //* 監聽 Modal 關閉
+    this.$refs.modal.addEventListener('hidden.bs.modal', () => {
+      //* Modal 關閉後初始化裁切預覽圖片
+      this.$refs.cropImg.cropImgUrl = ''
+    })
   }
 
 }

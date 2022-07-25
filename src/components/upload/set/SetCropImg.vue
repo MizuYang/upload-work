@@ -1,17 +1,10 @@
 <template>
-  <!-- <input type="radio" id="radioA" name="radio" value="自由裁切"
-     v-model="cropType">
-    <label for="radioA">自由裁切</label>
-    <br />
-    <input type="radio" id="radioB" name="radio" value="限制裁切寬高"
-     v-model="cropType">
-    <label for="radioB">限制裁切寬高</label> -->
     <h3>裁切模式</h3>
-    <select name="" id="" v-model="cropType">
-      <option value="自由裁切">自由裁切</option>
-      <option value="限制裁切寬高">限制裁切寬高</option>
+    <select name="" id="" v-model="freeCropMode">
+      <option :value="true">自由裁切</option>
+      <option :value="false">限制裁切寬高</option>
     </select>
-    <div class="my-3" v-if="cropType==='限制裁切寬高'">
+    <div class="my-3" v-if="!freeCropMode">
       <p class="fs-5">輸入希望裁切的圖片尺寸</p>
       <label for="width">寬：</label>
       <input id="width" type="number" v-model="crop.width"
@@ -27,17 +20,16 @@
 
 export default {
 
-  emits: ['getCropSize', 'getCropMode'],
-
   watch: {
     crop: {
       handler () {
-        this.$emit('getCropSize', this.crop)
+        this.$parent.$refs.cropImg.option.autoCropWidth = this.crop.width
+        this.$parent.$refs.cropImg.option.autoCropHeight = this.crop.height
       },
       deep: true
     },
-    cropType () {
-      this.$emit('getCropMode', this.cropType)
+    freeCropMode () {
+      this.$parent.$refs.cropImg.option.fixedBox = Boolean(!this.freeCropMode)
     }
   },
 
@@ -47,7 +39,7 @@ export default {
         width: 160,
         height: 150
       },
-      cropType: '自由裁切'
+      freeCropMode: true
     }
   }
 

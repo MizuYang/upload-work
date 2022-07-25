@@ -32,9 +32,6 @@
       <div class="col-2 my-auto">
         <button class="btn btn-primary" type="button" @click="getCropImgUrl">裁切</button>
         <div class="my-2">
-          <!-- <button v-if="cropImgUrl" class="btn btn-primary" type="button" @click="getCropUrl" ref="confirmBtn">確認裁切</button> -->
-        </div>
-        <div class="my-2">
           <button class="btn btn-primary btn-secondary d-none" type="button"
           @click="getOriginUrl" ref="originBtn">恢復裁切</button>
         </div>
@@ -59,37 +56,6 @@ export default {
     imgUrl: {
       type: String
     }
-    // cropW: {
-    //   type: Number,
-    //   default: 160
-    // },
-    // cropH: {
-    //   type: Number,
-    //   default: 150
-    // },
-    // fixedSize: {
-    //   type: Boolean,
-    //   default: false
-    // }
-  },
-
-  // emits: ['getCropUrl', 'getOriginUrl'],
-
-  watch: {
-    imgUrl () {
-      this.cropImgUrl = '' //* 裁切預覽初始化
-      this.originUrl = this.imgUrl
-      this.option.img = this.imgUrl
-    },
-    cropW () {
-      this.option.autoCropWidth = this.cropW
-    },
-    cropH () {
-      this.option.autoCropHeight = this.cropH
-    },
-    fixedSize () {
-      this.option.fixedBox = this.fixedSize
-    }
   },
 
   data () {
@@ -100,13 +66,13 @@ export default {
         full: false, //* 是否输出原图比例的截图
         outputType: 'jpg', //* 裁剪生成图片的格式
         canMove: false, //* 圖片拖動
-        fixedBox: this.fixedSize, //* 改變截圖框大小
+        fixedBox: false, //* 改變截圖框大小
         original: false, //* 上传图片按照原始比例渲染
         canMoveBox: true, //* 截圖框可否拖動
         autoCrop: true, //* 截圖框顯示
         //* 只有自动截图开启 宽度高度才生效
-        autoCropWidth: this.cropW, //* 默認生成的寬
-        autoCropHeight: this.cropH, //* 默認生成的高
+        autoCropWidth: 160, //* 默認生成的寬
+        autoCropHeight: 150, //* 默認生成的高
         centerBox: true, //* 截圖框是否被限制在圖片裡面
         high: true,
         max: 99999,
