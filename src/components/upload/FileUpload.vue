@@ -7,40 +7,36 @@
     <uploader-unsupport></uploader-unsupport>
     <uploader-drop>
       <p>將文件拖放到此處以上傳</p>
-      <uploader-btn>選擇檔案</uploader-btn>
-      <uploader-btn :attrs="attrs" ref="img">選擇圖片</uploader-btn>
-      <uploader-btn :directory="true">選擇資料夾</uploader-btn>
+      <uploader-btn v-if="uploadMode==='一般檔案'">選擇檔案</uploader-btn>
+      <uploader-btn v-if="uploadMode==='圖片'" :attrs="attrs">選擇圖片</uploader-btn>
+      <!-- <uploader-btn :directory="true">選擇資料夾</uploader-btn> -->
     </uploader-drop>
     <uploader-list></uploader-list>
   </uploader>
 
+  <!-- 上傳回饋 -->
+  <div class="my-3">
+    <p ref="feedback"></p>
+  </div>
+
   <!-- 圖片預覽 -->
-  <template v-if="previewImg.length > 0">
-    <ul class="row row-cols-3 g-3 list-unstyled my-3">
-      <li v-for="(img) in previewImg" :key="img">
-        <img :src="img" alt="" width="200" height="200">
-      <!-- 裁切 -->
-      <div class="my-3">
-        <CropImg :imgUrl="img" :cropW="150" :cropH="160" :fixedSize="false" @getCropUrl="getCropUrl" @getOriginUrl="getOriginUrl"></CropImg>
-      </div>
-      </li>
-    </ul>
-  </template>
+<!-- <PreviewImg></PreviewImg> -->
 
 </template>
 
 <script>
+// import PreviewImg from '@/components/upload/PreviewImg.vue'
 import SparkMD5 from 'spark-md5'
 import heic2any from 'heic2any'
-import CropImg from '@/components/CropImg.vue' //* 圖片裁切
+// import CropImg from '@/components/CropImg.vue' //* 圖片裁切
 export default {
 
   components: {
-    CropImg
+    // PreviewImg
+    // CropImg
   },
 
   computed: {
-
     previewImg () {
       const imgUrlArr = []
       //* 有檔案才執行
@@ -60,6 +56,28 @@ export default {
         }
       })
       return imgUrlArr
+    }
+  },
+
+  props: {
+    //* 上傳模式
+    uploadMode: {
+      type: String,
+      required: true
+    },
+    //* 檔案大小
+    validateSize: {
+      type: Number
+    },
+    //* 解析度
+    validateResolution: {
+      type: Boolean
+    },
+    validateW: {
+      type: Number
+    },
+    validateH: {
+      type: Number
     }
   },
 
@@ -84,10 +102,14 @@ export default {
         paused: '暫停中',
         waiting: '等待中'
       },
+      uploadStatus: {
+        null: 0,
+        success: 1,
+        fail: 2
+      },
       //* 驗證條件
-      imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'heic', 'heif'],
-      // imgType: [],
-      size: 153600
+      imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'heic', 'heif']
+      // size: 153600
       // width: 150,
       // height: 150
 
@@ -99,53 +121,64 @@ export default {
   //! 確認裁切、恢復裁切
   //! 按確認上傳後取得 file 物件
 
+  // ? 檔案大小上傳熱氣球第二次，不會跳錯
+
   methods: {
     async onFileAdded (file) {
-      //* 檢查格式
       const type = file.name.split('.').pop()
-      if (!this.imgType.includes(type)) {
-        const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
-        file.cancel()
-        throw err
+      //* 若選圖片上傳 > 檢查檔案格式
+      if (this.uploadMode === '圖片') {
+        if (!this.imgType.includes(type)) {
+          file.cancel()
+          const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
+          this.failFeedback(err)
+          throw err
+        }
       }
-      //* 檢查大小
+      //* 檢查檔案大小
       const size = file.size
-      if (size > this.size) {
-        const err = `請上傳低於 ${this.size / 1024} Kb 的圖片`
+      if (size > this.validateSize) {
         file.cancel()
+        const err = `請上傳低於 ${this.validateSize / 1024} Kb 的檔案`
+        this.failFeedback(err)
         throw (err)
       }
-      console.log(1)
+      // console.log(1)
 
-      //* 驗證寬高
-      if (type === 'heic' || type === 'heif') {
+      //* 若 圖片模式+限制圖片寬高 > 檢查檢析度
+      if (this.validateResolution && this.uploadMode === '圖片') {
+        if (type === 'heic' || type === 'heif') {
         //* heic 先轉檔才取的到寬高，所以另外在這處理
-        await this.heic2Jpeg(file.file).then(url => {
-          console.log(2)
-          const img = new Image()
-          img.src = url
-          img.onload = () => {
-            if (img.width > this.width || img.height > this.height) {
-              file.cancel()
-              const err = `請上傳 ${this.width}*${this.height} 的圖片，您上傳的是${img.width}*${img.height}`
-              throw err
-            }
-          }
-        })
-      } else {
-        await this.getImgSize(file)
-          .then(img => {
+          await this.heic2Jpeg(file.file).then(url => {
             console.log(2)
-            if (img.width > this.width || img.height > this.height) {
-              const err = `請上傳 ${this.width}*${this.height} 的圖片，您上傳的是${img.width}*${img.height}`
-              file.cancel()
-              throw err
+            const img = new Image()
+            img.src = url
+            img.onload = () => {
+              if (img.width > this.validateW || img.height > this.validateH) {
+                file.cancel()
+                const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
+                this.failFeedback(err)
+                throw err
+              }
             }
           })
+        } else {
+          await this.getImgSize(file)
+            .then(img => {
+            // console.log(2)
+              if (img.width > this.validateW || img.height > this.validateH) {
+                file.cancel()
+                const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
+                this.failFeedback(err)
+                throw err
+              }
+            })
+        }
       }
 
-      console.log(3)
-
+      // console.log(3)
+      //* 驗證成功
+      this.successFeedback()
       this.panelShow = true
       this.computeMD5(file)
       file.params = this.params
@@ -326,8 +359,11 @@ export default {
         }
       }
       console.log(statusMap)
-      console.log('id:', id)
-      console.log('status:', status)
+      // this.$nextTick(() => {
+      //   this.$refs.feedback.textContent = statusMap[status].text
+      //   this.$refs.feedback.setAttribute(`'style', 'background-color: ${statusMap[status].bgc}'`)
+      //   console.log(this.$refs.feedback)
+      // })
 
       // this.$nextTick(() => {
       //   $(`<p class="myStatus_${id}"></p>`).appendTo(`.file_${id} .uploader-file-status`).css({
@@ -354,16 +390,28 @@ export default {
         duration: 2000
       })
     },
-    getCropUrl (cropUrl, index) {
-      // console.log(cropUrl)
-      // console.log(index)
-      console.log(this.file[0])
-      this.file[0].url = cropUrl
-      // this.file.perviewImgUrl = cropUrl
+    //* 上傳回饋
+    failFeedback (content) {
+      this.status = this.uploadStatus.fail
+      // this.clearPreviewImgUrl()
+      this.$refs.feedback.textContent = content
+      this.$refs.feedback.className = 'fail text-danger fst-italic'
     },
-    getOriginUrl () {
-      this.file.perviewImgUrl = this.tempPreviewImgUrl
+    successFeedback (e) {
+      this.status = this.uploadStatus.success
+      this.$refs.feedback.textContent = '上傳成功！'
+      this.$refs.feedback.className = 'success text-success'
     }
+    // getCropUrl (cropUrl, index) {
+    //   // console.log(cropUrl)
+    //   // console.log(index)
+    //   console.log(this.file[0])
+    //   this.file[0].url = cropUrl
+    //   // this.file.perviewImgUrl = cropUrl
+    // },
+    // getOriginUrl () {
+    //   this.file.perviewImgUrl = this.tempPreviewImgUrl
+    // }
   },
 
   mounted () {
@@ -373,7 +421,7 @@ export default {
       // window.uploader = this.uploader.uploader
     })
     setInterval(() => {
-      // console.log(this.file)
+      console.log(this.file)
     }, 2500)
   }
 
