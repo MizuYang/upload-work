@@ -5,6 +5,10 @@ const routes = [
     path: '/',
     name: 'home',
     component: () => import('@/views/HomeView.vue')
+  },
+  {
+    path: '/upload',
+    component: () => import('@/views/UploadPage.vue')
   }
 
   // { //* 代表所有主頁面下的頁面，路由錯誤都會被導向
@@ -16,6 +20,7 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
+  linkActiveClass: 'active',
   scrollBehavior (to, from, savedPosition) {
     if (to.fullPath.match('/')) {
       return {
