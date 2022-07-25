@@ -11,7 +11,7 @@
       <uploader-btn v-if="uploadMode==='圖片'" :attrs="attrs">選擇圖片</uploader-btn>
       <!-- <uploader-btn :directory="true">選擇資料夾</uploader-btn> -->
     </uploader-drop>
-    <uploader-list></uploader-list>
+    <uploader-list ref="uploaderList"></uploader-list>
   </uploader>
 
   <!-- 上傳回饋 -->
