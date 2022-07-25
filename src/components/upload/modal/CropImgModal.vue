@@ -8,7 +8,7 @@
       </div>
       <div class="modal-body">
         <!-- 裁切設定 -->
-        <SetCropImg></SetCropImg>
+        <SetCropImg ref="setCropImg"></SetCropImg>
         <!-- 圖片裁切 -->
         <CropImg :imgUrl="imgUrl" ref="cropImg"></CropImg>
       </div>
@@ -64,10 +64,14 @@ export default {
     this.$refs.modal.addEventListener('hidden.bs.modal', () => {
       //* Modal 關閉後初始化裁切預覽圖片
       this.$refs.cropImg.cropImgUrl = ''
+      //* 初始化裁切框大小
+      this.$refs.cropImg.option.autoCropWidth = 160
+      this.$refs.cropImg.option.autoCropHeight = 150
+      //* 初始化 限制寬高輸入框
+      this.$refs.setCropImg.crop.width = 160
+      this.$refs.setCropImg.crop.height = 150
     })
   }
 
 }
 </script>
-
-<style lang='scss' scope></style>

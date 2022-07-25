@@ -1,6 +1,4 @@
 <template>
-    <!-- <input type="button" @click="cropShow = !cropShow" :value="cropShow ? '關閉裁切': '開啟裁切'" class="btn btn-primary"> -->
-
     <div class="row height my-3">
       <div class="col-5">
         <VueCropper
@@ -66,7 +64,7 @@ export default {
         full: false, //* 是否输出原图比例的截图
         outputType: 'jpg', //* 裁剪生成图片的格式
         canMove: false, //* 圖片拖動
-        fixedBox: false, //* 改變截圖框大小
+        fixedBox: false, //* 改變裁切框大小
         original: false, //* 上传图片按照原始比例渲染
         canMoveBox: true, //* 截圖框可否拖動
         autoCrop: true, //* 截圖框顯示
