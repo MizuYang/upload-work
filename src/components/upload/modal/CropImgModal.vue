@@ -9,7 +9,7 @@
       <div class="modal-body">
         <p>裁切</p>
         <!-- <img :src="img" alt="要裁切的圖片"> -->
-        <CropImg></CropImg>
+        <CropImg :imgUrl="imgUrl"></CropImg>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -23,7 +23,7 @@
 
 <script>
 import Modal from 'bootstrap/js/dist/modal.js'
-import CropImg from '@/components/CropImg.vue' //* 圖片裁切
+import CropImg from '@/components/upload/function/CropImg.vue' //* 圖片裁切
 export default {
   components: {
     CropImg
@@ -32,7 +32,7 @@ export default {
   data () {
     return {
       modal: '',
-      img: ''
+      imgUrl: ''
     }
   },
 
@@ -40,9 +40,8 @@ export default {
   },
 
   methods: {
-    openModal (img) {
-      console.log(img)
-      this.img = img
+    openModal (imgUrl) {
+      this.imgUrl = imgUrl
       this.modal.show()
     }
   },

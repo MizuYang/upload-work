@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import CropImgModal from '@/components/modal/CropImgModal.vue' //* Modal
+import CropImgModal from '@/components/upload/modal/CropImgModal.vue' //* Modal
 export default {
   components: {
     CropImgModal

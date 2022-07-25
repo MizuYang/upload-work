@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import PreviewImg from '@/components/upload/PreviewImg.vue'
+import PreviewImg from '@/components/upload/function/PreviewImg.vue'
 import SparkMD5 from 'spark-md5'
 import heic2any from 'heic2any'
 // import CropImg from '@/components/CropImg.vue' //* 圖片裁切
