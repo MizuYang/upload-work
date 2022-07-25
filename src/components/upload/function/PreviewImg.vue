@@ -5,8 +5,12 @@
         <li v-for="(img, index) in previewImg" :key="`preview${index}`" class="text-center">
           <img :src="img" alt="上傳的圖片預覽" width="200" height="200">
           <div class="my-3">
+            <button class="btn btn-primary btn-secondary me-2" type="button"
+            @click="getOriginUrl(index)" ref="originBtn">恢復原圖</button>
             <button type="button" class="btn btn-primary" @click="$refs.cropImgModal.openModal(img, index)">裁切</button>
           </div>
+          <!-- <div class="my-2">
+        </div> -->
         </li>
       </ul>
       <!-- Modal -->
@@ -35,6 +39,7 @@ export default {
       //* 有檔案才執行
       if (this.file.length === 0) return this.imgUrlArr
       this.imgUrlArr = [] // eslint-disable-line
+      this.tempImgUrlArr = [] // eslint-disable-line
       this.file.forEach(file => {
         const type = file.name.split('.').pop()
         //* 是圖片才設定預覽
@@ -42,10 +47,12 @@ export default {
           //* 若是 Heic 檔就從 heic2Jpeg 來處理 Url
           if (file.heic) {
             this.imgUrlArr.push(file.url)
+            this.tempImgUrlArr.push(file.url)
             return
           }
           const url = URL.createObjectURL(file.file)
           this.imgUrlArr.push(url)
+          this.tempImgUrlArr.push(url)
         }
       })
       return this.imgUrlArr
@@ -54,7 +61,14 @@ export default {
 
   data () {
     return {
-      imgUrlArr: []
+      imgUrlArr: [],
+      tempImgUrlArr: []
+    }
+  },
+
+  methods: {
+    getOriginUrl (index) {
+      this.imgUrlArr[index] = this.tempImgUrlArr[index]
     }
   },
 

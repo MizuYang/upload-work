@@ -29,10 +29,6 @@
       </div>
       <div class="col-2 my-auto">
         <button class="btn btn-primary" type="button" @click="getCropImgUrl">裁切</button>
-        <div class="my-2">
-          <button class="btn btn-primary btn-secondary d-none" type="button"
-          @click="getOriginUrl" ref="originBtn">恢復裁切</button>
-        </div>
       </div>
       <div class="col-5 m-auto">
         <img v-if="cropImgUrl" :src="cropImgUrl" alt="裁切後的圖片">
@@ -96,11 +92,6 @@ export default {
     //* 確認裁切
     getCropUrl () {
       return this.cropImgUrl
-    },
-    //* 恢復裁切
-    getOriginUrl () {
-      this.$refs.originBtn.classList.add('d-none')
-      this.$emit('getOriginUrl')
     }
   },
 
