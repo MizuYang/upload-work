@@ -22,6 +22,10 @@
   <!-- 圖片預覽 -->
   <PreviewImg :file="file" :imgType="imgType"></PreviewImg>
 
+  <!-- 確定上傳 -->
+  <div class="text-center my-2" v-if="Object.keys(file).length > 0">
+    <button type="button" class="btn btn-primary" @click="$emit('upload', file)">確定上傳</button>
+  </div>
 </template>
 
 <script>
@@ -33,6 +37,8 @@ export default {
   components: {
     PreviewImg
   },
+
+  emits: ['upload'],
 
   props: {
     //* 上傳模式
@@ -87,7 +93,6 @@ export default {
     }
   },
 
-  //! 恢復裁切
   //! 按確認上傳後取得 file 物件
   // ? 檔案大小上傳熱氣球第二次，不會跳錯
 
@@ -370,16 +375,6 @@ export default {
       this.$refs.feedback.textContent = '上傳成功！'
       this.$refs.feedback.className = 'success text-success'
     }
-    // getCropUrl (cropUrl, index) {
-    //   // console.log(cropUrl)
-    //   // console.log(index)
-    //   console.log(this.file[0])
-    //   this.file[0].url = cropUrl
-    //   // this.file.perviewImgUrl = cropUrl
-    // },
-    // getOriginUrl () {
-    //   this.file.perviewImgUrl = this.tempPreviewImgUrl
-    // }
   },
 
   mounted () {

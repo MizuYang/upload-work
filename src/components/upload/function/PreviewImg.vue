@@ -44,7 +44,6 @@ export default {
 
       //* 初始化
       this.imgUrlArr = [] // eslint-disable-line
-      // this.tempImgUrlArr = [] // eslint-disable-line
 
       this.file.forEach((file, index) => {
         const type = file.name.split('.').pop()
@@ -64,7 +63,6 @@ export default {
             obj.tempUrl = url
           }
           this.imgUrlArr.push(obj)
-          // this.tempImgUrlArr.push(obj)
         }
       })
       return this.imgUrlArr
@@ -73,17 +71,12 @@ export default {
 
   data () {
     return {
-      imgUrlArr: [],
-      tempImgUrlArr: []
+      imgUrlArr: []
     }
   },
 
   methods: {
     getOriginUrl (index) {
-      // this.imgUrlArr[index].url = this.tempImgUrlArr[index].url
-      console.log(index)
-      console.log(this.tempFile)
-      // this.imgUrlArr[index].url = this.tempFile[index].url
       this.imgUrlArr[index].url = this.imgUrlArr[index].tempUrl
     },
     removeFile (img, index) {
@@ -98,22 +91,10 @@ export default {
 
       //* 刪除圖片預覽列表
       this.imgUrlArr.splice(index, 1)
-      this.tempImgUrlArr.splice(index, 1)
 
-      //! 刪除索引位置怪怪的，因為 Heic 檔上傳有非同步問題，導致上傳區與預覽區索引位置不同
-      //! 這裡刪除檔案和上傳區實際刪除的不同
-      //! 須優先處理預覽時非同步問題
-      // ? previewImg 改寫成物件看看，給他 fileName 到時候用 findIndex 就不會出錯了
-      // ? 這樣也可以查看渲染的圖片和檔案名稱是否一致
-      // ? 監聽整個上傳區，使用點擊事件，並看 e.target 是否能抓到檔案名稱，再做刪除按鈕
-      // ? 也可試試看將隱藏的 X 刪除按鈕顯示
+      //* 要給後端的 file data
+      this.$parent.file.splice(index, 1)
     }
-  },
-
-  mounted () {
-    setInterval(() => {
-      // console.log('預覽圖片：', this.file)
-    }, 2500)
   }
 
 }

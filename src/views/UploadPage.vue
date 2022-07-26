@@ -3,7 +3,7 @@
     <SetUpload @setUpload="setUpload"></SetUpload>
 
     <!-- 檔案上傳 -->
-    <FileUpload :uploadMode="options.uploadMode" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH"></FileUpload>
+    <FileUpload :uploadMode="options.uploadMode" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @upload="upload"></FileUpload>
 
 </template>
 
@@ -28,6 +28,10 @@ export default {
   methods: {
     setUpload (options) {
       this.options = options
+    },
+    //* 要給後端的資料
+    upload (fileData) {
+      console.log(fileData)
     }
   },
 
