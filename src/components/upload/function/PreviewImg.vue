@@ -2,15 +2,6 @@
     <template v-if="previewImg.length > 0">
       <!-- 預覽圖片列表 -->
       <ul class="row row-cols-3 g-3 list-unstyled my-3">
-        <!-- <li v-for="(img, index) in previewImg" :key="`preview${index}`" class="text-center">
-          <img :src="img" alt="上傳的圖片預覽" width="200" height="200">
-          <div class="my-3">
-            <button type="button" class="btn btn-danger" @click="removeFile(img,index)">刪除</button>
-            <button class="btn btn-primary btn-secondary mx-2" type="button"
-            @click="getOriginUrl(index)" ref="originBtn">恢復原圖</button>
-            <button type="button" class="btn btn-primary" @click="$refs.cropImgModal.openModal(img, index)">裁切</button>
-          </div>
-        </li> -->
         <li v-for="(img, index) in previewImg" :key="`preview${index}`" class="text-center">
           <img :src="img.url" alt="上傳的圖片預覽" width="200" height="200">
           <div class="fileNameStyle my-2 p-3">
@@ -20,7 +11,7 @@
             <button type="button" class="btn btn-danger" @click="removeFile(img,index)">刪除</button>
             <button class="btn btn-primary btn-secondary mx-2" type="button"
             @click="getOriginUrl(index)" ref="originBtn">恢復原圖</button>
-            <button type="button" class="btn btn-primary" @click="$refs.cropImgModal.openModal(img, index)">裁切</button>
+            <button type="button" class="btn btn-primary" @click="$refs.cropImgModal.openModal(img.url, index)">裁切</button>
           </div>
         </li>
       </ul>
@@ -39,7 +30,7 @@ export default {
 
   props: {
     file: {
-      type: Object
+      type: Array
     },
     imgType: {
       imgType: Array
@@ -49,33 +40,31 @@ export default {
   computed: {
     previewImg () {
       //* 有檔案才執行
-      if (this.file.length === 0) return this.imgUrlArr
+      if (this.file.length === 0) return []
+
       //* 初始化
       this.imgUrlArr = [] // eslint-disable-line
-      this.tempImgUrlArr = [] // eslint-disable-line
+      // this.tempImgUrlArr = [] // eslint-disable-line
 
       this.file.forEach((file, index) => {
-        console.log('index:', index, file)
         const type = file.name.split('.').pop()
+        const obj = {
+          fileName: file.name,
+          url: null
+        }
         //* 是圖片才設定預覽
         if (this.imgType.includes(type)) {
-          //* 若是 Heic 檔就從 heic2Jpeg 來處理 Url
+          //* 若是 Heic 就用 heic2Jpeg 處理好的 Url(在props file)
           if (file.heic) {
-            const obj = {
-              fileName: file.name,
-              url: file.url
-            }
-            this.imgUrlArr.push(obj)
-            console.error(this.imgUrlArr)
-            return
-          }
-          const url = URL.createObjectURL(file.file)
-          const obj = {
-            fileName: file.name,
-            url: url
+            obj.url = file.url
+            obj.tempUrl = file.url
+          } else {
+            const url = URL.createObjectURL(file.file)
+            obj.url = url
+            obj.tempUrl = url
           }
           this.imgUrlArr.push(obj)
-          console.error(this.imgUrlArr)
+          // this.tempImgUrlArr.push(obj)
         }
       })
       return this.imgUrlArr
@@ -91,16 +80,21 @@ export default {
 
   methods: {
     getOriginUrl (index) {
-      this.imgUrlArr[index] = this.tempImgUrlArr[index]
+      // this.imgUrlArr[index].url = this.tempImgUrlArr[index].url
+      console.log(index)
+      console.log(this.tempFile)
+      // this.imgUrlArr[index].url = this.tempFile[index].url
+      this.imgUrlArr[index].url = this.imgUrlArr[index].tempUrl
     },
     removeFile (img, index) {
-      console.log(this.$parent.$refs.uploaderList.fileList)
       //* 若上傳 heic 檔，非同步問題會導致上傳區與預覽列表索引不同步，所以分開刪除
       //* 刪除已上傳列表
       const removeIndex = this.$parent.$refs.uploaderList.fileList.findIndex(item => {
         return item.name === img.fileName
       })
-      this.$parent.$refs.uploaderList.fileList.splice(removeIndex, 1)
+      if (removeIndex !== -1) {
+        this.$parent.$refs.uploaderList.fileList.splice(removeIndex, 1)
+      }
 
       //* 刪除圖片預覽列表
       this.imgUrlArr.splice(index, 1)

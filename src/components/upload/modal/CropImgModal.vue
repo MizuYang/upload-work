@@ -47,11 +47,11 @@ export default {
       this.modal.show()
     },
     confirmCrop () {
-      const cropImg = this.$refs.cropImg.getCropUrl()
+      const cropImgUrl = this.$refs.cropImg.getCropUrl()
       //* 變更圖片預覽
-      this.$parent.previewImg[this.currentImgIndex] = cropImg
+      this.$parent.imgUrlArr[this.currentImgIndex].url = cropImgUrl
       //* 將裁切後的圖傳回外層 file
-      this.$parent.$parent.file[this.currentImgIndex].cropImgUrl = cropImg
+      this.$parent.$parent.file[this.currentImgIndex].cropImgUrl = cropImgUrl
 
       this.$refs.confirmCrop.classList.add('d-none')
       this.modal.hide()

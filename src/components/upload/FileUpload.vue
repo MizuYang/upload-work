@@ -9,7 +9,7 @@
       <p>將文件拖放到此處以上傳</p>
       <uploader-btn v-if="uploadMode==='一般檔案'">選擇檔案</uploader-btn>
       <uploader-btn v-if="uploadMode==='圖片'" :attrs="attrs">選擇圖片</uploader-btn>
-      <!-- <uploader-btn :directory="true">選擇資料夾</uploader-btn> -->
+      <uploader-btn :directory="true">選擇資料夾</uploader-btn>
     </uploader-drop>
     <uploader-list ref="uploaderList"></uploader-list>
   </uploader>
@@ -28,12 +28,10 @@
 import PreviewImg from '@/components/upload/function/PreviewImg.vue'
 import SparkMD5 from 'spark-md5'
 import heic2any from 'heic2any'
-// import CropImg from '@/components/CropImg.vue' //* 圖片裁切
 export default {
 
   components: {
     PreviewImg
-    // CropImg
   },
 
   props: {
@@ -60,8 +58,8 @@ export default {
 
   data () {
     return {
-      file: [],
-      uploader: null,
+      file: [], //* 給後端的 file
+      // uploader: null,
       options: {
         // target: '//localhost:3000/upload', // '//jsonplaceholder.typicode.com/posts/',
         target: '/', // 測試上傳
@@ -86,18 +84,11 @@ export default {
       },
       //* 驗證條件
       imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'heic', 'heif']
-      // size: 153600
-      // width: 150,
-      // height: 150
-
     }
   },
 
-  //! 元件化
-  //! 確認裁切、恢復裁切
+  //! 恢復裁切
   //! 按確認上傳後取得 file 物件
-  //! 刪除已準備上傳檔案
-
   // ? 檔案大小上傳熱氣球第二次，不會跳錯
 
   methods: {
