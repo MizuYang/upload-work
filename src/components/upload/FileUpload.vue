@@ -126,7 +126,6 @@ export default {
         if (type === 'heic' || type === 'heif') {
         //* heic 先轉檔才取的到寬高，所以另外在這處理
           await this.heic2Jpeg(file.file).then(url => {
-            console.log(2)
             const img = new Image()
             img.src = url
             img.onload = () => {
