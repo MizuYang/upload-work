@@ -4,13 +4,13 @@
 
     <!-- 檔案上傳 -->
     <FileUpload :uploadMode="options.uploadMode" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @upload="upload"></FileUpload>
-
 </template>
 
 <script>
 import SetUpload from '@/components/upload/set/SetUpload.vue'
 import FileUpload from '@/components/upload/FileUpload.vue'
 export default {
+
   components: {
     SetUpload,
     FileUpload
@@ -22,9 +22,6 @@ export default {
     }
   },
 
-  watch: {
-  },
-
   methods: {
     setUpload (options) {
       this.options = options
@@ -33,9 +30,6 @@ export default {
     upload (fileData) {
       console.log(fileData)
     }
-  },
-
-  mounted () {
   }
 
 }

@@ -34,7 +34,6 @@
         <img v-if="cropImgUrl" :src="cropImgUrl" alt="裁切後的圖片">
       </div>
     </div>
-
 </template>
 
 <script>
@@ -73,9 +72,7 @@ export default {
         fixed: false //* 截圖框等比例縮放
         // fixedNumber: [1, 1] //* 截图框的宽高比例
       },
-      cropImgUrl: '',
-      // originUrl: '',
-      cropShow: false
+      cropImgUrl: ''
     }
   },
 
@@ -93,10 +90,6 @@ export default {
     getCropUrl () {
       return this.cropImgUrl
     }
-  },
-
-  mounted () {
-    this.originUrl = this.imgUrl
   }
 
 }

@@ -128,6 +128,7 @@ export default {
               if (this.validateResolution) {
                 if (img.width > this.validateW || img.height > this.validateH) {
                   file.cancel()
+                  this.removeValidateFailFile(file)
                   const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
                   this.failFeedback(err)
                   throw err
@@ -141,6 +142,7 @@ export default {
               if (this.validateResolution) {
                 if (img.width > this.validateW || img.height > this.validateH) {
                   file.cancel()
+                  this.removeValidateFailFile(file)
                   const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
                   this.failFeedback(err)
                   throw err
@@ -155,7 +157,6 @@ export default {
       this.panelShow = true
       this.computeMD5(file)
       file.params = this.params
-      // Bus.$emit('fileAdded')
     },
     getImgSize (file) {
       return new Promise((resolve, reject) => {
@@ -205,6 +206,14 @@ export default {
         })
       })
     },
+    //* 移除驗證失敗的檔案
+    removeValidateFailFile (file) {
+      const fileName = file.name
+      const removeFileIndex = this.file.findIndex(file => {
+        return file.name === fileName
+      })
+      this.file.splice(removeFileIndex, 1)
+    },
     onFileProgress (rootFile, file, chunk) {
       console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
     },
@@ -220,33 +229,6 @@ export default {
         const fileLen = this.file.length
         this.file[fileLen - 1].newFileName = this.getRandomFileName()
       }
-
-      // const res = JSON.parse(response)
-      // // 服务器自定义的错误（即虽返回200，但是是错误的情况），这种错误是Uploader无法拦截的
-      // if (!res.result) {
-      //   this.$message({ message: res.message, type: 'error' })
-      //   // 文件状态设为“失败”
-      //   this.statusSet(file.id, 'failed')
-      //   return
-      // }
-      // // 如果服务端返回需要合并
-      // if (res.needMerge) {
-      //   // 文件状态设为“合并中”
-      //   this.statusSet(file.id, 'merging')
-      // //   api.mergeSimpleUpload({
-      // //     tempName: res.tempName,
-      // //     fileName: file.name,
-      // //     ...file.params
-      // //   }).then(res => {
-      // //     // 文件合并成功
-      // //     Bus.$emit('fileSuccess')
-      // //     this.statusRemove(file.id)
-      // //   }).catch(e => {})
-      // //   // 不需要合并
-      // // } else {
-      // //   Bus.$emit('fileSuccess')
-      // //   console.log('上传成功')
-      // }
     },
     onFileError (rootFile, file, response, chunk) {
       this.$message({
@@ -263,8 +245,6 @@ export default {
       const chunkSize = 10 * 1024 * 1000
       const chunks = Math.ceil(file.size / chunkSize)
       const spark = new SparkMD5.ArrayBuffer()
-      // 文件状态设为"计算MD5"
-      this.statusSet(file.id, 'md5')
       file.pause()
       loadNext()
       fileReader.onload = e => {
@@ -272,10 +252,6 @@ export default {
         if (currentChunk < chunks) {
           currentChunk++
           loadNext()
-          // 实时展示MD5的计算进度
-          // this.$nextTick(() => {
-          //   $(`.myStatus_${file.id}`).text('校验MD5 ' + ((currentChunk / chunks) * 100).toFixed(0) + '%')
-          // })
         } else {
           const md5 = spark.end()
           this.computeMD5Success(md5, file)
@@ -295,65 +271,10 @@ export default {
     computeMD5Success (md5, file) {
       file.uniqueIdentifier = md5
       file.resume()
-      this.statusRemove(file.id)
-    },
-    fileListShow () {
-      // const $list = $('#global-uploader .file-list')
-      // if ($list.is(':visible')) {
-      //   $list.slideUp()
-      //   this.collapse = true
-      // } else {
-      //   $list.slideDown()
-      //   this.collapse = false
-      // }
     },
     close () {
       this.uploader.cancel()
       this.panelShow = false
-    },
-    //* 新增的自定义的状态: 'md5'、'transcoding'、'failed'
-    statusSet (id, status) {
-      const statusMap = {
-        md5: {
-          text: '校验MD5',
-          bgc: '#fff'
-        },
-        merging: {
-          text: '合并中',
-          bgc: '#e2eeff'
-        },
-        transcoding: {
-          text: '转码中',
-          bgc: '#e2eeff'
-        },
-        failed: {
-          text: '上传失败',
-          bgc: '#e2eeff'
-        }
-      }
-      console.log(statusMap)
-      // this.$nextTick(() => {
-      //   this.$refs.feedback.textContent = statusMap[status].text
-      //   this.$refs.feedback.setAttribute(`'style', 'background-color: ${statusMap[status].bgc}'`)
-      //   console.log(this.$refs.feedback)
-      // })
-
-      // this.$nextTick(() => {
-      //   $(`<p class="myStatus_${id}"></p>`).appendTo(`.file_${id} .uploader-file-status`).css({
-      //     position: 'absolute',
-      //     top: '0',
-      //     left: '0',
-      //     right: '0',
-      //     bottom: '0',
-      //     zIndex: '1',
-      //     backgroundColor: statusMap[status].bgc
-      //   }).text(statusMap[status].text)
-      // })
-    },
-    statusRemove (id) {
-      // this.$nextTick(() => {
-      //   $(`.myStatus_${id}`).remove()
-      // })
     },
     error (msg) {
       this.$notify({
@@ -366,7 +287,6 @@ export default {
     //* 上傳回饋
     failFeedback (content) {
       this.status = this.uploadStatus.fail
-      // this.clearPreviewImgUrl()
       this.$refs.feedback.textContent = content
       this.$refs.feedback.className = 'fail text-danger fst-italic'
     },
@@ -375,15 +295,6 @@ export default {
       this.$refs.feedback.textContent = '上傳成功！'
       this.$refs.feedback.className = 'success text-success'
     }
-  },
-
-  mounted () {
-    this.$nextTick(() => {
-      // window.uploader = this.uploader.uploader
-    })
-    setInterval(() => {
-      // console.log(this.file)
-    }, 2500)
   }
 
 }
