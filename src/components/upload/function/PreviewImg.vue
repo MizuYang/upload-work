@@ -45,10 +45,12 @@ export default {
       //* 初始化
       this.imgUrlArr = [] // eslint-disable-line
 
-      this.file.forEach((file, index) => {
+      this.file.forEach((file) => {
+        console.error(file)
         const type = file.name.split('.').pop()
         const obj = {
           fileName: file.name,
+          newFileName: file.uniqueIdentifier,
           url: null
         }
         //* 是圖片才設定預覽
@@ -82,8 +84,10 @@ export default {
     removeFile (img, index) {
       //* 若上傳 heic 檔，非同步問題會導致上傳區與預覽列表索引不同步，所以分開刪除
       //* 刪除已上傳列表
+      console.log(img)
+      console.log(this.$parent.$refs.uploaderList)
       const removeIndex = this.$parent.$refs.uploaderList.fileList.findIndex(item => {
-        return item.name === img.fileName
+        return item.uniqueIdentifier === img.newFileName
       })
       if (removeIndex !== -1) {
         this.$parent.$refs.uploaderList.fileList.splice(removeIndex, 1)

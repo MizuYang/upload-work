@@ -1,5 +1,5 @@
 <template>
-  <!-- 上傳模式 -->
+    <!-- 上傳模式 -->
     上傳模式：
     <select name="" id="" v-model="options.uploadMode">
       <option value="一般檔案">一般檔案</option>
@@ -27,8 +27,6 @@
 <script>
 
 export default {
-  components: {
-  },
 
   emits: ['setUpload'],
 
@@ -52,12 +50,6 @@ export default {
         validateH: 0
       }
     }
-  },
-
-  methods: {
-  },
-
-  mounted () {
   }
 
 }

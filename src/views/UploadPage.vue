@@ -3,7 +3,7 @@
     <SetUpload @setUpload="setUpload"></SetUpload>
 
     <!-- 檔案上傳 -->
-    <FileUpload :uploadMode="options.uploadMode" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @upload="upload"></FileUpload>
+    <FileUpload :uploadMode="options.uploadMode" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @getFormData="getFormData"></FileUpload>
 </template>
 
 <script>
@@ -26,9 +26,28 @@ export default {
     setUpload (options) {
       this.options = options
     },
+    // formData  fileData
     //* 要給後端的資料
-    upload (fileData) {
-      console.log(fileData)
+    getFormData (obj) {
+      console.log(obj)
+      // const fd = new FormData()
+      // for (const i in obj) {
+      //   this.addendFormData(obj[i], fd, i)
+      // }
+      // console.log(obj)
+    },
+    appendFromData (data, formData, key) {
+      if ((typeof data === 'object' && data !== null && !(data instanceof File)) || Array.isArray(data)) {
+        for (const i in data) {
+          if ((typeof data[i] === 'object' && data[i] !== null) || Array.isArray(data[i])) {
+            this.objectToFormData(data[i], formData, key + '[' + i + ']')
+          } else {
+            formData.append(key + '[' + i + ']', data[i])
+          }
+        }
+      } else {
+        formData.append(key, data)
+      }
     }
   }
 

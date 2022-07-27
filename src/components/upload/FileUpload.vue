@@ -24,7 +24,7 @@
 
   <!-- 確定上傳 -->
   <div class="text-center my-2" v-if="Object.keys(file).length > 0">
-    <button type="button" class="btn btn-primary" @click="$emit('upload', file)">確定上傳</button>
+    <button type="button" class="btn btn-primary" @click="$emit('getFormData', file)">確定上傳</button>
   </div>
 </template>
 
@@ -93,8 +93,7 @@ export default {
     }
   },
 
-  //! 按確認上傳後取得 file 物件
-  // ? 檔案大小上傳熱氣球第二次，不會跳錯
+  // ? 檔案大小 上傳驗證失敗檔案第二次，不會跳錯
 
   methods: {
     async onFileAdded (file) {
@@ -116,7 +115,6 @@ export default {
         this.failFeedback(err)
         throw (err)
       }
-
       //* 若 圖片模式+限制圖片寬高 > 檢查檢析度
       if (this.uploadMode === '圖片') {
         if (type === 'heic' || type === 'heif') {
@@ -171,20 +169,20 @@ export default {
         }
       })
     },
-    getRandomFileName () {
-      let text = ''
-      const randomLen = 30
-      const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    // getRandomFileName () {
+    //   let text = ''
+    //   const randomLen = 30
+    //   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
-      for (let i = 0; i < randomLen; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length))
-      }
-      return text
-    },
+    //   for (let i = 0; i < randomLen; i++) {
+    //     text += possible.charAt(Math.floor(Math.random() * possible.length))
+    //   }
+    //   return text
+    // },
+
     //* 若圖檔為 heic 或 heif 則轉檔為 JPG
     heic2Jpeg (file) {
       return new Promise((resolve, reject) => {
-        console.log(file)
         const name = file.name
         heic2any({
           blob: file,
@@ -192,16 +190,20 @@ export default {
           quality: 1
         }).then((heicToJpgResult) => {
           const url = URL.createObjectURL(heicToJpgResult)
-          console.log('heicToJpgResult', heicToJpgResult)
+          //* 取出上傳區 Heic 檔的物件，再加上我們自行取得的圖片Url
+          const obj = this.$refs.uploaderList.fileList.filter(files => {
+            return files.name === file.name
+          })
+          const newObj = obj[0]
+          newObj.heic = true //* Heic 檔不在 previewImg 處理的依據
+          newObj.newFileName = newObj.uniqueIdentifier
+          newObj.url = url
+          newObj.name = name
+          newObj.heic2Jpeg = heicToJpgResult
 
           //* 將 heic 轉成 jepg 檔後傳至 file
-          this.file.push(heicToJpgResult)
-          const fileLen = this.file.length
-          this.file[fileLen - 1].newFileName = this.getRandomFileName()
-          this.file[fileLen - 1].url = url
-          this.file[fileLen - 1].name = name
-          this.file[fileLen - 1].heic = true //* Heic 檔不在 previewImg 處理的依據
-          // 后续上传逻辑
+          this.file.push(newObj)
+
           resolve(url)
         })
       })
@@ -218,6 +220,7 @@ export default {
       console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
     },
     onFileSuccess (rootFile, file, response, chunk) {
+      console.log(file)
       const isHeic = 'heic'
       //* heic 會在 heic2Jpeg 傳到 file，而不會在這上傳
       //* (因轉檔關係，轉檔後的檔案無法透過套件自動上傳)
@@ -226,8 +229,8 @@ export default {
       //* 如果沒被中斷上傳，才丟到 file
       if (!file.aborted) {
         this.file.push(file)
-        const fileLen = this.file.length
-        this.file[fileLen - 1].newFileName = this.getRandomFileName()
+        // const fileLen = this.file.length
+        // this.file[fileLen - 1].newFileName = this.getRandomFileName() //* 30碼名字
       }
     },
     onFileError (rootFile, file, response, chunk) {
