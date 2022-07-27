@@ -38,7 +38,7 @@ export default {
     PreviewImg
   },
 
-  emits: ['upload'],
+  emits: ['getFormData'],
 
   props: {
     //* 上傳模式
@@ -92,8 +92,6 @@ export default {
       imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'heic', 'heif']
     }
   },
-
-  // ? 檔案大小 上傳驗證失敗檔案第二次，不會跳錯
 
   methods: {
     async onFileAdded (file) {
@@ -220,7 +218,6 @@ export default {
       console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
     },
     onFileSuccess (rootFile, file, response, chunk) {
-      console.log(file)
       const isHeic = 'heic'
       //* heic 會在 heic2Jpeg 傳到 file，而不會在這上傳
       //* (因轉檔關係，轉檔後的檔案無法透過套件自動上傳)

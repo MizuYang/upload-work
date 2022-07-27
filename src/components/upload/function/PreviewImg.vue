@@ -46,7 +46,6 @@ export default {
       this.imgUrlArr = [] // eslint-disable-line
 
       this.file.forEach((file) => {
-        console.error(file)
         const type = file.name.split('.').pop()
         const obj = {
           fileName: file.name,
@@ -84,8 +83,6 @@ export default {
     removeFile (img, index) {
       //* 若上傳 heic 檔，非同步問題會導致上傳區與預覽列表索引不同步，所以分開刪除
       //* 刪除已上傳列表
-      console.log(img)
-      console.log(this.$parent.$refs.uploaderList)
       const removeIndex = this.$parent.$refs.uploaderList.fileList.findIndex(item => {
         return item.uniqueIdentifier === img.newFileName
       })

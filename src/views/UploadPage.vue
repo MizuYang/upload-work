@@ -4,12 +4,15 @@
 
     <!-- 檔案上傳 -->
     <FileUpload :uploadMode="options.uploadMode" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @getFormData="getFormData"></FileUpload>
+
 </template>
 
 <script>
 import SetUpload from '@/components/upload/set/SetUpload.vue'
 import FileUpload from '@/components/upload/FileUpload.vue'
 export default {
+
+  // ! 檔案大小 上傳驗證失敗檔案第二次，不會跳錯
 
   components: {
     SetUpload,
@@ -26,28 +29,65 @@ export default {
     setUpload (options) {
       this.options = options
     },
-    // formData  fileData
     //* 要給後端的資料
-    getFormData (obj) {
-      console.log(obj)
-      // const fd = new FormData()
-      // for (const i in obj) {
-      //   this.addendFormData(obj[i], fd, i)
-      // }
-      // console.log(obj)
-    },
-    appendFromData (data, formData, key) {
-      if ((typeof data === 'object' && data !== null && !(data instanceof File)) || Array.isArray(data)) {
-        for (const i in data) {
-          if ((typeof data[i] === 'object' && data[i] !== null) || Array.isArray(data[i])) {
-            this.objectToFormData(data[i], formData, key + '[' + i + ']')
-          } else {
-            formData.append(key + '[' + i + ']', data[i])
-          }
-        }
-      } else {
-        formData.append(key, data)
-      }
+    getFormData (files) {
+      console.log(files)
+
+      const formData = new FormData()
+      files.forEach((file, index) => formData.append(`file${index + 1}`, file))
+
+      // //* 若要查看 formData
+      // const object = {}
+      // formData.forEach((value, key) => {
+      //   object[key] = value
+      // })
+      // console.log(object)
+
+      //   this.$http.post(apiUrl, formData, {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }).then((response) => {
+      //       console.log(response);
+      //   }).catch((error) => {
+      //       console.log(error);
+      //   })
+      //     }
+
+      // #region
+      // getFormData (obj) {
+      //   // console.log(obj)
+      //   const formData = new FormData()
+      //   for (const i in obj) {
+      //     this.appendFromData(obj[i], formData, i)
+      //   }
+      // },
+      // appendFromData (data, formData, key) {
+      //   // console.error('data', data)
+      //   // console.error('formData', formData)
+      //   // console.error('key', key)
+      //   if ((typeof data === 'object' && data !== null && !(data instanceof File)) || Array.isArray(data)) {
+      //     for (const i in data) {
+      //       if ((typeof data[i] === 'object' && data[i] !== null) || Array.isArray(data[i])) {
+      //         // this.objectToFormData(data[i], formData, key + '[' + i + ']')
+      //         // console.error(data[i], formData, key + '[' + i + ']')
+      //         console.log('data[i]', data[i])
+
+    //         setTimeout(() => {
+    //           console.error('formData', formData)
+    //         }, 2500)
+    //         setTimeout(() => {
+    //           console.log(key + '[' + i + ']')
+    //         }, 3500)
+    //       } else {
+    //         formData.append(key + '[' + i + ']', data[i])
+    //       }
+    //     }
+    //   } else {
+    //     formData.append(key, data)
+    //   }
+    // }
+    // #endregion
     }
   }
 
