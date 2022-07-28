@@ -1,9 +1,13 @@
 <template>
     <!-- 檔案上傳設定 -->
-    <SetUpload @setUpload="setUpload"></SetUpload>
+    <div class="div" v-if="!options.setFinish">
+      <SetUpload @setUpload="setUpload"></SetUpload>
+    </div>
 
     <!-- 檔案上傳 -->
-    <FileUpload :uploadMode="options.uploadMode" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @getFormData="getFormData"></FileUpload>
+    <div class="" v-if="options.setFinish">
+      <FileUpload :uploadMode="options.uploadMode" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @getFormData="getFormData"></FileUpload>
+    </div>
 
 </template>
 
@@ -37,12 +41,12 @@ export default {
       files.forEach((file, index) => formData.append(`file${index + 1}`, file))
 
       // //* 若要查看 formData
-      // const object = {}
-      // formData.forEach((value, key) => {
-      //   object[key] = value
-      // })
-      // console.log(object)
-
+      const object = {}
+      formData.forEach((value, key) => {
+        object[key] = value
+      })
+      console.log(object)
+      // #region //* axios
       //   this.$http.post(apiUrl, formData, {
       //     headers: {
       //       "Content-Type": "multipart/form-data",
@@ -53,6 +57,7 @@ export default {
       //       console.log(error);
       //   })
       //     }
+      // #endregion
 
       // #region
       // getFormData (obj) {
