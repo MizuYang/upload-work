@@ -4,16 +4,18 @@
       <h2>上傳設定</h2>
     </header>
     <main>
-     上傳模式：
-      <select name="" id="" v-model="options.mode">
+     上傳格式：
+      <select name="" id="" v-model="options.mode" @change="changeMode">
         <option selected="請選擇檔案格式" disabled>請選擇檔案格式</option>
-        <option :value="mode" v-for="mode in options.modeList" :key="mode">{{ mode }}</option>
+        <option :value="key" v-for="(mode, key) in options.modeList" :key="mode">{{ mode }}</option>
       </select>
       <br /> <br />
 
+//! 把 section 複用，利用 modeList
+
     <!-- 上傳格式設定 -->
       <!-- Word 檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-if="options.mode==='Word'">
+      <section class="border-bottom mb-2 pb-2" v-if="options.mode==='word'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('word')">Word 類型</button>
         </h5>
@@ -26,7 +28,7 @@
       </section>
 
       <!-- Excel 檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='Excel'">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='excel'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('excel')">Excel 類型</button>
         </h5>
@@ -39,7 +41,7 @@
       </section>
 
       <!-- PPT -->
-      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='PPT'">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='ppt'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('ppt')">PPT 類型</button>
         </h5>
@@ -52,7 +54,7 @@
       </section>
 
       <!-- PDF 檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='PDF'">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='pdf'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('pdf')">PDF 類型</button>
         </h5>
@@ -65,7 +67,7 @@
       </section>
 
       <!-- 影像檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='圖片'">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='img'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('img')">圖片類型</button>
         </h5>
@@ -78,7 +80,7 @@
       </section>
 
       <!-- 視訊檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='影片'">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='video'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('video')">影片類型</button>
         </h5>
@@ -91,7 +93,7 @@
       </section>
 
       <!-- 音訊檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='音訊'">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='music'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('music')">音訊類型</button>
         </h5>
@@ -153,7 +155,16 @@ export default {
     return {
       allSelectCount: {},
       options: {
-        modeList: ['Word', 'Excel', 'PPT', 'PDF', '圖片', '影片', '音訊'],
+        modeList: {
+          word: 'Word',
+          excel: 'Excel',
+          ppt: 'PPT',
+          pdf: 'PDF',
+          img: '圖片',
+          video: '影片',
+          music: '音訊'
+        },
+
         mode: '請選擇檔案格式',
         validateSize: 153600,
         validateResolution: false,
@@ -177,7 +188,16 @@ export default {
       this.options.setFinish = true
     },
     allSelect (format) {
-      if (!this.allSelectCount[format]) {
+      const hasCheck = this.allSelectCount[format] === undefined || this.allSelectCount[format] === 1
+      if (hasCheck) {
+        //* 若已勾選過，則將該項目全部取消勾選
+        this.allSelectCount[format] = 0
+        //* 將該類型從 options 全部移除
+        this.format[format].forEach(format => {
+          const removeIndex = this.options.validateFormat.indexOf(format)
+          this.options.validateFormat.splice(removeIndex, 1)
+        })
+      } else {
         //* 若沒勾選過的話，將該類型項目全部勾選
         this.allSelectCount[format] = 1
         //* 將該類型新增至 options
@@ -187,15 +207,19 @@ export default {
             this.options.validateFormat.push(format)
           }
         })
-      } else {
-        //* 若已勾選過，則將該項目全部取消勾選
-        this.allSelectCount[format] = 0
-        //* 將該類型從 options 全部移除
-        this.format[format].forEach(format => {
-          const removeIndex = this.options.validateFormat.indexOf(format)
-          this.options.validateFormat.splice(removeIndex, 1)
-        })
       }
+    },
+    changeMode (mode) {
+      const format = this.options.mode
+      // //* 切換上傳格式，原先的選擇的格式都會清空
+      this.options.validateFormat = []
+      // //* 選擇模式後該格式全勾選
+      this.format[format].forEach(format => {
+      //   //* 若已有該選該項目，則不再新增進去
+        if (this.options.validateFormat.indexOf(format) === -1) {
+          this.options.validateFormat.push(format)
+        }
+      })
     }
   }
 
