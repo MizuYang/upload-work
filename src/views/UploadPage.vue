@@ -1,11 +1,11 @@
 <template>
     <!-- 檔案上傳設定 -->
-    <div class="div" v-if="!options.setFinish">
+    <div v-if="!options.setFinish">
       <SetUpload @setUpload="setUpload"></SetUpload>
     </div>
 
     <!-- 檔案上傳 -->
-    <div class="" v-if="options.setFinish">
+    <div v-if="options.setFinish">
       <FileUpload :validateFormat="options.validateFormat" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @getFormData="getFormData"></FileUpload>
     </div>
 

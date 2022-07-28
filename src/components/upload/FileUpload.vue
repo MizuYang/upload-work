@@ -96,15 +96,26 @@ export default {
   methods: {
     async onFileAdded (file) {
       const type = file.name.split('.').pop()
-      //* 若選圖片上傳 > 檢查檔案格式
-      if (this.uploadMode === '圖片') {
-        if (!this.imgType.includes(type)) {
-          file.cancel()
-          const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
-          this.failFeedback(err)
-          throw err
-        }
-      }
+      // //* 若選圖片上傳 > 檢查檔案格式
+      // if (this.uploadMode === '圖片') {
+      //   if (!this.imgType.includes(type)) {
+      //     file.cancel()
+      //     const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
+      //     this.failFeedback(err)
+      //     throw err
+      //   }
+      // }
+      //* 檢查檔案格式
+      const validateType = this.options.validateType
+      console.log(validateType)
+      //! validateType 位置抓的不對，先去 setUpload 把options 資料丟出來
+      //! 才有辦法抓到設定檔
+      // if (!validateType.includes(type)) {
+      //   file.cancel()
+      //   const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
+      //   this.failFeedback(err)
+      //   throw err
+      // }
       //* 檢查檔案大小
       const size = file.size
       if (size > this.validateSize) {
