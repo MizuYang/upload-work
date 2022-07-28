@@ -6,7 +6,7 @@
 
     <!-- 檔案上傳 -->
     <div class="" v-if="options.setFinish">
-      <FileUpload :uploadMode="options.uploadMode" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @getFormData="getFormData"></FileUpload>
+      <FileUpload :validateFormat="options.validateFormat" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @getFormData="getFormData"></FileUpload>
     </div>
 
 </template>

@@ -7,9 +7,9 @@
     <uploader-unsupport></uploader-unsupport>
     <uploader-drop>
       <p>將文件拖放到此處以上傳</p>
-      <uploader-btn v-if="uploadMode==='一般檔案'">選擇檔案</uploader-btn>
-      <uploader-btn v-if="uploadMode==='圖片'" :attrs="attrs">選擇圖片</uploader-btn>
-      <uploader-btn :directory="true">選擇資料夾</uploader-btn>
+      <uploader-btn>選擇檔案</uploader-btn>
+      <!-- <uploader-btn v-if="uploadMode==='圖片'" :attrs="attrs">選擇圖片</uploader-btn> -->
+      <!-- <uploader-btn :directory="true">選擇資料夾</uploader-btn> -->
     </uploader-drop>
     <uploader-list ref="uploaderList"></uploader-list>
   </uploader>
@@ -41,7 +41,7 @@ export default {
   emits: ['getFormData'],
 
   props: {
-    //* 上傳模式
+    //* 上傳模式 uploadMode
     uploadMode: {
       type: String,
       required: true
@@ -89,7 +89,7 @@ export default {
         fail: 2
       },
       //* 驗證條件
-      imgType: ['png', 'jpg', 'svg', 'jpeg', 'bmp', 'gif', 'heic', 'heif']
+      imgType: ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.psd', '.thm', '.yuv', '.ai', '.drw', '.eps', '.ps', '.svg', '.3dm', '.max', 'heic', 'heif']
     }
   },
 
