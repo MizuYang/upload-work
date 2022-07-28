@@ -151,6 +151,7 @@
             {{ options.validateW }} * {{ options.validateH }}
           </span>
         </li>
+        <li>選擇的上傳模式：{{ options.modeList[options.mode] }}</li>
       </ul>
       {{ options }}
       <button type="button" class="btn btn-primary" @click="startUpload">開始上傳</button>
