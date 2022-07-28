@@ -140,20 +140,28 @@
       </div>
     </main>
 
-    <!-- 開始上傳按鈕 -->
-    <footer class="my-3 text-center">
+    <!-- 預覽已設定項目 -->
+    <footer class="my-3">
       <h3>已設定的項目</h3>
-      <ul>
-        <li v-if="options.validateSize">檔案限制大小：{{ options.validateSize }}</li>
+      <ul class="px-0">
+        <li v-if="options.validateSize"><span class="fs-5">檔案限制大小：</span>{{ options.validateSize }}</li>
         <li v-if="options.validateResolution">
-          圖片解析度：
+          <span class="fs-5">圖片解析度：</span>
           <span v-if="options.validateW || options.validateH">
             {{ options.validateW }} * {{ options.validateH }}
           </span>
         </li>
-        <li>選擇的上傳模式：{{ options.modeList[options.mode] }}</li>
+        <li v-if="options.mode!=='請選擇檔案格式'">
+          <span class="fs-5">選擇的上傳模式：</span>
+          {{ options.modeList[options.mode] }}
+        </li>
+        <li v-if="options.mode!=='請選擇檔案格式'">
+          <span class="fs-5">可上傳檔案格式：</span>
+          <code v-for="format in options.validateFormat" :key="format" class="symbol">
+            {{ format }}
+          </code>
+        </li>
       </ul>
-      {{ options }}
       <button type="button" class="btn btn-primary" @click="startUpload">開始上傳</button>
     </footer>
 </template>
@@ -251,4 +259,11 @@ export default {
 }
 </script>
 
-<style lang='scss' scope></style>
+<style lang='scss' scope>
+.symbol::after {
+  content: '、'
+}
+.symbol:last-child::after {
+  content: ''
+}
+</style>
