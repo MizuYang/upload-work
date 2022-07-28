@@ -4,16 +4,16 @@
       <h2>上傳設定</h2>
     </header>
     <main>
-      <!-- 上傳模式：
-      <select name="" id="" v-model="options.uploadMode">
-        <option value="一般檔案">一般檔案</option>
-        <option value="圖片">圖片</option>
+     上傳模式：
+      <select name="" id="" v-model="options.mode">
+        <option selected="請選擇檔案格式" disabled>請選擇檔案格式</option>
+        <option :value="mode" v-for="mode in options.modeList" :key="mode">{{ mode }}</option>
       </select>
-      <br /> <br /> -->
+      <br /> <br />
 
     <!-- 上傳格式設定 -->
       <!-- Word 檔案類型 -->
-      <section class="border-bottom mb-2 pb-2">
+      <section class="border-bottom mb-2 pb-2" v-if="options.mode==='Word'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('word')">Word 類型</button>
         </h5>
@@ -25,8 +25,8 @@
         </div>
       </section>
 
-      <!-- Excel檔案類型 -->
-      <section class="border-bottom mb-2 pb-2">
+      <!-- Excel 檔案類型 -->
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='Excel'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('excel')">Excel 類型</button>
         </h5>
@@ -39,7 +39,7 @@
       </section>
 
       <!-- PPT -->
-      <section class="border-bottom mb-2 pb-2">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='PPT'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('ppt')">PPT 類型</button>
         </h5>
@@ -52,7 +52,7 @@
       </section>
 
       <!-- PDF 檔案類型 -->
-      <section class="border-bottom mb-2 pb-2">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='PDF'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('pdf')">PDF 類型</button>
         </h5>
@@ -65,7 +65,7 @@
       </section>
 
       <!-- 影像檔案類型 -->
-      <section class="border-bottom mb-2 pb-2">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='圖片'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('img')">圖片類型</button>
         </h5>
@@ -78,7 +78,7 @@
       </section>
 
       <!-- 視訊檔案類型 -->
-      <section class="border-bottom mb-2 pb-2">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='影片'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('video')">影片類型</button>
         </h5>
@@ -91,7 +91,7 @@
       </section>
 
       <!-- 音訊檔案類型 -->
-      <section class="border-bottom mb-2 pb-2">
+      <section class="border-bottom mb-2 pb-2" v-else-if="options.mode==='音訊'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allSelect('music')">音訊類型</button>
         </h5>
@@ -124,6 +124,10 @@
     <!-- 開始上傳按鈕 -->
     <footer class="my-3 text-center">
       <h3>已設定的項目</h3>
+      <ul>
+        <li v-if="options.validateSize">檔案限制大小：{{ options.validateSize }}</li>
+        <li v-if="options.validateSize">檔案限制大小：{{ options.validateSize }}</li>
+      </ul>
       {{ options }}
       <button type="button" class="btn btn-primary" @click="startUpload">開始上傳</button>
     </footer>
@@ -149,7 +153,8 @@ export default {
     return {
       allSelectCount: {},
       options: {
-        // uploadMode: '圖片',
+        modeList: ['Word', 'Excel', 'PPT', 'PDF', '圖片', '影片', '音訊'],
+        mode: '請選擇檔案格式',
         validateSize: 153600,
         validateResolution: false,
         validateFormat: [],
