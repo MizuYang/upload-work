@@ -147,6 +147,7 @@ export default {
 
   data () {
     return {
+      allSelectCount: {},
       options: {
         // uploadMode: '圖片',
         validateSize: 153600,
@@ -171,15 +172,25 @@ export default {
       this.options.setFinish = true
     },
     allSelect (format) {
-      const allFormat = document.querySelectorAll(`[data-format="${format}"]`)
-      //* checkbox 全部勾選
-      allFormat.forEach(checkbox => {
-        checkbox.checked = 'true'
-      })
-      //* 將該類型新增至 options
-      this.format[format].forEach(format => {
-        this.options.validateFormat.push(format)
-      })
+      if (!this.allSelectCount[format]) {
+        //* 若沒勾選過的話，將該類型項目全部勾選
+        this.allSelectCount[format] = 1
+        //* 將該類型新增至 options
+        this.format[format].forEach(format => {
+          //* 若已有該選該項目，則不再新增進去
+          if (this.options.validateFormat.indexOf(format) === -1) {
+            this.options.validateFormat.push(format)
+          }
+        })
+      } else {
+        //* 若已勾選過，則將該項目全部取消勾選
+        this.allSelectCount[format] = 0
+        //* 將該類型從 options 全部移除
+        this.format[format].forEach(format => {
+          const removeIndex = this.options.validateFormat.indexOf(format)
+          this.options.validateFormat.splice(removeIndex, 1)
+        })
+      }
     }
   }
 
