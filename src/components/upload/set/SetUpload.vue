@@ -14,7 +14,9 @@
     <!-- 上傳格式設定 -->
       <!-- Word 檔案類型 -->
       <section class="border-bottom mb-2 pb-2">
-        <h5>Word 類型</h5>
+        <h5>
+          <button type="button" class="btn btn-dark btn-sm">Word 類型</button>
+        </h5>
         <div class="d-flex flex-wrap flex-wrap">
           <div v-for="format in format.word" :key="format" class="mx-1">
             <input type="checkbox" :id="format" class="me-1">
@@ -25,7 +27,9 @@
 
       <!-- Excel檔案類型 -->
       <section class="border-bottom mb-2 pb-2">
-        <h5>Excel 類型</h5>
+        <h5>
+          <button type="button" class="btn btn-dark btn-sm">Excel 類型</button>
+        </h5>
         <div class="d-flex flex-wrap">
           <div v-for="format in format.excel" :key="format" class="mx-1">
             <input type="checkbox" :id="format" class="me-1">
@@ -36,7 +40,9 @@
 
       <!-- PPT -->
       <section class="border-bottom mb-2 pb-2">
-        <h5>PPT 類型</h5>
+        <h5>
+          <button type="button" class="btn btn-dark btn-sm">PPT 類型</button>
+        </h5>
         <div class="d-flex flex-wrap">
           <div v-for="format in format.ppt" :key="format" class="mx-1">
             <input type="checkbox" :id="format" class="me-1">
@@ -47,7 +53,9 @@
 
       <!-- PDF 檔案類型 -->
       <section class="border-bottom mb-2 pb-2">
-        <h5>PDF 類型</h5>
+        <h5>
+          <button type="button" class="btn btn-dark btn-sm">PDF 類型</button>
+        </h5>
         <div class="d-flex flex-wrap">
           <div v-for="format in format.pdf" :key="format" class="mx-1">
             <input type="checkbox" :id="format" class="me-1">
@@ -58,7 +66,9 @@
 
       <!-- 影像檔案類型 -->
       <section class="border-bottom mb-2 pb-2">
-        <h5>圖片類型</h5>
+        <h5>
+          <button type="button" class="btn btn-dark btn-sm">圖片類型</button>
+        </h5>
         <div class="d-flex flex-wrap">
           <div v-for="format in format.img" :key="format" class="mx-1">
             <input type="checkbox" :id="format" class="me-1">
@@ -69,7 +79,9 @@
 
       <!-- 視訊檔案類型 -->
       <section class="border-bottom mb-2 pb-2">
-        <h5>影片類型</h5>
+        <h5>
+          <button type="button" class="btn btn-dark btn-sm">影片類型</button>
+        </h5>
         <div class="d-flex flex-wrap">
           <div v-for="format in format.video" :key="format" class="mx-1">
             <input type="checkbox" :id="format" class="me-1">
@@ -80,7 +92,9 @@
 
       <!-- 音訊檔案類型 -->
       <section class="border-bottom mb-2 pb-2">
-        <h5>音訊類型</h5>
+        <h5>
+          <button type="button" class="btn btn-dark btn-sm">音訊類型</button>
+        </h5>
         <div class="d-flex flex-wrap">
           <div v-for="format in format.music" :key="format" class="mx-1">
             <input type="checkbox" :id="format" class="me-1">
@@ -134,7 +148,7 @@ export default {
   data () {
     return {
       options: {
-        uploadMode: '圖片',
+        // uploadMode: '圖片',
         validateSize: 153600,
         validateResolution: false,
         setFinish: false
