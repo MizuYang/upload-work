@@ -42,12 +42,6 @@ export default {
       }
       return resolut
     }
-  },
-
-  mounted () {
-    // setInterval(() => {
-    //   console.log(this.setup)
-    // }, 2000)
   }
 }
 </script>

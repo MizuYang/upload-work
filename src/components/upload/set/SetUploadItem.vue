@@ -22,7 +22,6 @@
             <label :for="item">{{ item }}</label>
           </div>
         </div>
-        <!-- <i class="text-danger ms-2 d-none" :class="key">*此欄位必填</i> -->
       </section>
 
       <!-- 限制檔案大小 -->
@@ -62,10 +61,7 @@
 </template>
 
 <script>
-
 export default {
-  components: {
-  },
 
   emits: ['getSetup'],
 
@@ -174,12 +170,7 @@ export default {
         }
       })
     }
-  },
-
-  mounted () {
   }
 
 }
 </script>
-
-<style lang='scss' scope></style>

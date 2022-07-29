@@ -2,15 +2,12 @@
     <!-- 上傳設定 -->
     <main v-if="!setup.setFinish">
       <SetUploadItem @getSetup="getSetup" ref="setItem"></SetUploadItem>
-
       <hr />
-
     </main>
 
     <!-- 預覽已設定項目 -->
     <footer class="mt-3">
       <PreviewSetup :setup="setup"></PreviewSetup>
-
       <div class="text-center mt-3" v-if="!setup.setFinish">
         <button type="button" class="btn btn-primary" @click="startUpload">開始上傳</button>
       </div>
@@ -30,62 +27,9 @@ export default {
 
   emits: ['setUpload'],
 
-  // computed: {
-  //   inputSize () {
-  //     const style = this.setup.size.unitStyle
-  //     const unit = this.setup.size.unit
-  //     return style[unit]
-  //   },
-  //   typeList () {
-  //     const mode = this.setup.mode
-  //     return this.type[mode]
-  //   }
-  // },
-
   data () {
     return {
       setup: {}
-      // allCheckCount: {}
-
-      // setup: {
-      //   modeList: {
-      //     word: 'Word',
-      //     excel: 'Excel',
-      //     ppt: 'PPT',
-      //     pdf: 'PDF',
-      //     img: '圖片',
-      //     video: '影片',
-      //     music: '音訊'
-      //   },
-      //   mode: '請選擇檔案格式', //* 用戶選擇上傳模式：Word、PTT..等
-      //   validateType: [], //* 能上傳的格式
-      //   size: {
-      //     unitList: ['GB', 'MB', 'KB', 'B'],
-      //     unitStyle: {
-      //       GB: 'w-s',
-      //       MB: 'w-m',
-      //       KB: 'w-l',
-      //       B: 'w-xl'
-      //     },
-      //     unit: 'KB',
-      //     setSize: 150,
-      //     validateSize: 0,
-      //     hasValidateSize: false
-      //   },
-      //   hasValidateResolution: false,
-      //   setFinish: false
-      // },
-
-      // type: {
-      //   word: ['doc', 'dot', 'wbk', 'docx', 'docm', 'dotx', 'dotm', 'docb'],
-      //   excel: ['xls', 'xlt', 'xlm', 'xlsx', 'xlsm', 'xltx', 'xltm'],
-      //   ppt: ['ppt', 'pot', 'pps', 'pptx', 'pptm', 'potx', 'potm', 'ppam', 'ppsx', 'ppsm', 'sldx', 'sldm'],
-      //   pdf: ['pdf', 'accdb'],
-      //   img: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'psd', 'thm', 'yuv', 'ai', 'drw', 'eps', 'ps', 'svg', '3dm', 'max', 'heic', 'heif'],
-      //   video: ['avi', 'mp4', 'mov', 'wmv', 'asf', '3g2', '3gp', 'asx', 'flv', 'mpg', 'rm', 'swf', 'vob'],
-      //   music: ['mp3', 'aif', 'iff', 'm3u', 'm4a', 'mid', 'mpa', 'ra', 'wav', 'wma']
-
-      // }
     }
   },
   methods: {
@@ -173,42 +117,6 @@ export default {
       const success = result === -1? true : false // eslint-disable-line
       return success
     },
-    // //* 全部勾選
-    // allCheck (type) {
-    //   const hasCheck = this.allCheckCount[type] === undefined || this.allCheckCount[type] === 1
-    //   if (hasCheck) {
-    //     //* 若已勾選過，則將該項目全部取消勾選
-    //     this.allCheckCount[type] = 0
-    //     //* 將該類型從 setup 全部移除
-    //     this.type[type].forEach(type => {
-    //       const removeIndex = this.setup.validateType.indexOf(type)
-    //       this.setup.validateType.splice(removeIndex, 1)
-    //     })
-    //   } else {
-    //     //* 若沒勾選過的話，將該類型項目全部勾選
-    //     this.allCheckCount[type] = 1
-    //     //* 將該類型新增至 setup
-    //     this.type[type].forEach(type => {
-    //       //* 若已有該選該項目，則不再新增進去
-    //       if (this.setup.validateType.indexOf(type) === -1) {
-    //         this.setup.validateType.push(type)
-    //       }
-    //     })
-    //   }
-    // },
-    // //* 下拉選單切換模式
-    // changeMode () {
-    //   const type = this.setup.mode
-    //   // //* 切換上傳格式，原先的選擇的格式都會清空
-    //   this.setup.validateType = []
-    //   // //* 選擇模式後該格式全勾選
-    //   this.type[type].forEach(type => {
-    //   //   //* 若已有該選該項目，則不再新增進去
-    //     if (this.setup.validateType.indexOf(type) === -1) {
-    //       this.setup.validateType.push(type)
-    //     }
-    //   })
-    // },
     //* 單位轉換
     unitChange () {
       const data = {
