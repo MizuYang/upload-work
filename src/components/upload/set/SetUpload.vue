@@ -134,21 +134,21 @@
       </section>
 
     <!-- 限制檔案大小 -->
-      <input type="radio" name="size" id="freeSize" value="false" v-model="setup.hasValidateSize">
+      <input type="radio" name="size" id="freeSize" value="false" v-model="setup.size.hasValidateSize">
       <label for="freeSize">大小無限制</label>
 
-      <input type="radio" name="size" id="sizeRule" class="ms-3" value="true" v-model="setup.hasValidateSize">
+      <input type="radio" name="size" id="sizeRule" class="ms-3" value="true" v-model="setup.size.hasValidateSize">
       <label for="sizeRule">限制檔案大小</label>
 
-      <template v-if="setup.hasValidateSize==='true'">
-        <select class="mx-2" v-model="setup.sizeUnit">
-          <option :value="unit" v-for="unit in setup.sizeUnitList" :key="unit">{{ unit }}</option>
+      <template v-if="setup.size.hasValidateSize==='true'">
+        <select class="mx-2" v-model="setup.size.unit">
+          <option :value="unit" v-for="unit in setup.size.unitList" :key="unit">{{ unit }}</option>
         </select>
 
         <label for="validateSize" class="ms-3">檔案大小：</label>
-        <input id="validateSize" type="number" v-model="setup.validateSize" oninput="value=value.replace(/[^\d]/g,'')"
+        <input id="validateSize" type="number" v-model="setup.size.setSize" oninput="value=value.replace(/[^\d]/g,'')"
           :class="inputSize">
-          {{ setup.sizeUnit }}
+          {{ setup.size.unit }}
         <i class="text-danger ms-2 d-none" ref="size">*此欄位必填</i>
       </template>
       <br /> <br />
@@ -175,9 +175,9 @@
     <footer class="mt-3">
       <h3>已設定的項目</h3>
       <ul class="px-0">
-        <li v-if="setup.validateSize">
+        <li v-if="setup.size.validateSize && setup.size.setSize">
           <span class="fs-5">檔案限制大小：</span>
-          <span class="border-bottom">{{ setup.validateSize }} {{ setup.sizeUnit }}</span>
+          <span class="border-bottom">{{ setup.size.setSize }} {{ setup.size.unit }}</span>
         </li>
         <li v-if="setup.hasValidateResolution">
           <span class="fs-5">圖片解析度：</span>
@@ -210,8 +210,8 @@ export default {
 
   computed: {
     inputSize () {
-      const style = this.setup.sizeUnitStyle
-      const unit = this.setup.sizeUnit
+      const style = this.setup.size.unitStyle
+      const unit = this.setup.size.unit
       return style[unit]
     }
   },
@@ -230,19 +230,22 @@ export default {
           music: '音訊'
         },
         mode: '請選擇檔案格式', //* 用戶選擇上傳模式：Word、PTT..等
-        sizeUnitList: ['GB', 'MB', 'KB', 'B'],
-        sizeUnitStyle: {
-          GB: 'w-s',
-          MB: 'w-m',
-          KB: 'w-l',
-          B: 'w-xl'
+        size: {
+          unitList: ['GB', 'MB', 'KB', 'B'],
+          unitStyle: {
+            GB: 'w-s',
+            MB: 'w-m',
+            KB: 'w-l',
+            B: 'w-xl'
+          },
+          unit: 'KB',
+          setSize: 161,
+          validateSize: 0,
+          hasValidateSize: false
         },
-        sizeUnit: 'KB',
-        validateSize: 161,
         validateType: [], //* 能上傳的格式
         hasValidateResolution: false,
-        setFinish: false,
-        hasValidateSize: false
+        setFinish: false
       },
       type: {
         word: ['doc', 'dot', 'wbk', 'docx', 'docm', 'dotx', 'dotm', 'docb'],
@@ -264,7 +267,7 @@ export default {
       //* 驗證通過才顯示上傳
       if (result) {
         //* 處理檔案大小單位
-        if (this.setup.hasValidateSize) {
+        if (this.setup.size.hasValidateSize) {
           this.unitChange()
         }
         //* 開啟檔案上傳、隱藏上傳設定
@@ -278,21 +281,21 @@ export default {
       //* 上傳模式
       const mode = this.setup.mode
       if (mode === '請選擇檔案格式') {
-        this.$refs.mode.classList.remove('d-none')
+        this.showErrorFeedback('mode')
         validate.mode = false
       } else {
-        this.$refs.mode.classList.add('d-none')
+        this.hideErrorFeedback('mode')
         validate.mode = true
       }
       //* 限制檔案大小
-      const hasValidateSize = this.setup.hasValidateSize
-      const size = this.setup.validateSize
+      const hasValidateSize = this.setup.size.hasValidateSize
+      const size = this.setup.size.setSize
       if (hasValidateSize === 'true') {
         if (!size) {
-          this.$refs.size.classList.remove('d-none')
+          this.showErrorFeedback('size')
           validate.size = false
         } else if (size && hasValidateSize) {
-          this.$refs.size.classList.add('d-none')
+          this.hideErrorFeedback('size')
           validate.size = true
         }
       } else {
@@ -305,18 +308,18 @@ export default {
       const h = this.setup.validateH
       if (hasValidateResolution) {
         if (!w) {
-          this.$refs.w.classList.remove('d-none')
+          this.showErrorFeedback('w')
           validate.w = false
         } else {
-          this.$refs.w.classList.add('d-none')
+          this.hideErrorFeedback('w')
           validate.w = true
         }
 
         if (!h) {
-          this.$refs.h.classList.remove('d-none')
+          this.showErrorFeedback('h')
           validate.h = false
         } else {
-          this.$refs.h.classList.add('d-none')
+          this.hideErrorFeedback('h')
           validate.h = true
         }
       } else {
@@ -328,10 +331,10 @@ export default {
       const validateType = this.setup.validateType
       const type = this.setup.mode
       if (validateType.length === 0) {
-        this.$refs[type].classList.remove('d-none')
+        this.showErrorFeedback(type)
         validate.type = false
       } else {
-        this.$refs[type].classList.add('d-none')
+        this.hideErrorFeedback(type)
 
         validate.type = true
       }
@@ -385,12 +388,22 @@ export default {
         KB: 1,
         B: 0
       }
-      const unit = this.setup.sizeUnit
+      const unit = this.setup.size.unit
       const count = data[unit]
       //* 若是 B 則不需轉換單位
       if (count) {
-        this.setup.validateSize = this.setup.validateSize * (1024 ** count)
+        this.setup.size.validateSize = this.setup.size.setSize * (1024 ** count)
       }
+    },
+    showErrorFeedback (item) {
+      this.$nextTick(() => {
+        this.$refs[item].classList.remove('d-none')
+      })
+    },
+    hideErrorFeedback (item) {
+      this.$nextTick(() => {
+        this.$refs[item].classList.add('d-none')
+      })
     }
   }
 
