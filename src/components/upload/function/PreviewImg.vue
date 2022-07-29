@@ -32,8 +32,8 @@ export default {
     file: {
       type: Array
     },
-    imgType: {
-      imgType: Array
+    mode: {
+      mode: Array
     }
   },
 
@@ -46,14 +46,13 @@ export default {
       this.imgUrlArr = [] // eslint-disable-line
 
       this.file.forEach((file) => {
-        const type = file.name.split('.').pop()
         const obj = {
           fileName: file.name,
           newFileName: file.uniqueIdentifier,
           url: null
         }
         //* 是圖片才設定預覽
-        if (this.imgType.includes(type)) {
+        if (this.mode === 'img') {
           //* 若是 Heic 就用 heic2Jpeg 處理好的 Url(在props file)
           if (file.heic) {
             obj.url = file.url

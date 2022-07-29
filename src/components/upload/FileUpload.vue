@@ -20,7 +20,7 @@
   </div>
 
   <!-- 圖片預覽 -->
-  <PreviewImg :file="file" :imgType="imgType"></PreviewImg>
+  <PreviewImg :file="file" :mode="setup.mode"></PreviewImg>
 
   <!-- 確定上傳 -->
   <div class="text-center my-2" v-if="Object.keys(file).length > 0">
@@ -44,25 +44,6 @@ export default {
     setup: {
       type: Object
     }
-    // //* 上傳模式 uploadMode
-    // uploadMode: {
-    //   type: String,
-    //   required: true
-    // },
-    // //* 檔案大小
-    // validateSize: {
-    //   type: Number
-    // },
-    // //* 解析度
-    // validateResolution: {
-    //   type: Boolean
-    // },
-    // validateW: {
-    //   type: Number
-    // },
-    // validateH: {
-    //   type: Number
-    // }
   },
 
   data () {
@@ -90,24 +71,13 @@ export default {
         null: 0,
         success: 1,
         fail: 2
-      },
-      //* 驗證條件
-      imgType: ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.psd', '.thm', '.yuv', '.ai', '.drw', '.eps', '.ps', '.svg', '.3dm', '.max', 'heic', 'heif']
+      }
     }
   },
 
   methods: {
     async onFileAdded (file) {
       const type = file.name.split('.').pop()
-      // //* 若選圖片上傳 > 檢查檔案格式
-      // if (this.setup.mode === 'img') {
-      //   if (!this.imgType.includes(type)) {
-      //     file.cancel()
-      //     const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
-      //     this.failFeedback(err)
-      //     throw err
-      //   }
-      // }
       //* 檢查檔案格式
       const validateType = this.setup.validateType
       if (!validateType.includes(type)) {
@@ -126,37 +96,37 @@ export default {
           throw (err)
         }
       }
-      //* 若為上傳圖片、且須檢查解析度
-      if (this.setup.mode === 'img' && this.setup.hasValidateResolution) {
+      //* 若為上傳圖片
+      if (this.setup.mode === 'img') {
         //* heic 先轉檔才取的到寬高，和其他格式分開處理
         if (type === 'heic' || type === 'heif') {
           await this.heic2Jpeg(file.file).then(url => {
             const img = new Image()
             img.src = url
-            img.onload = () => {
-              // if (this.setup.hasValidateResolution) {
-              if (img.width > this.setup.validateW || img.height > this.setup.validateH) {
-                file.cancel()
-                this.removeValidateFailFile(file)
-                const err = `請上傳 ${this.setup.validateW}*${this.setup.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
-                this.failFeedback(err)
-                throw err
+            if (this.setup.hasValidateResolution) { //* 須檢查解析度
+              img.onload = () => {
+                if (img.width > this.setup.validateW || img.height > this.setup.validateH) {
+                  file.cancel()
+                  this.removeValidateFailFile(file)
+                  const err = `請上傳 ${this.setup.validateW}*${this.setup.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
+                  this.failFeedback(err)
+                  throw err
+                }
               }
-              // }
             }
           })
         } else { //* 其他圖片格式在這處理
           await this.getImgSize(file)
             .then(img => {
-              // if (this.setup.hasValidateResolution) {
-              if (img.width > this.setup.validateW || img.height > this.setup.validateH) {
-                file.cancel()
-                this.removeValidateFailFile(file)
-                const err = `請上傳 ${this.setup.validateW}*${this.setup.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
-                this.failFeedback(err)
-                throw err
+              if (this.setup.hasValidateResolution) { //* 須檢查解析度
+                if (img.width > this.setup.validateW || img.height > this.setup.validateH) {
+                  file.cancel()
+                  this.removeValidateFailFile(file)
+                  const err = `請上傳 ${this.setup.validateW}*${this.setup.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
+                  this.failFeedback(err)
+                  throw err
+                }
               }
-              // }
             })
         }
       }
@@ -180,17 +150,6 @@ export default {
         }
       })
     },
-    // getRandomFileName () {
-    //   let text = ''
-    //   const randomLen = 30
-    //   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-
-    //   for (let i = 0; i < randomLen; i++) {
-    //     text += possible.charAt(Math.floor(Math.random() * possible.length))
-    //   }
-    //   return text
-    // },
-
     //* 若圖檔為 heic 或 heif 則轉檔為 JPG
     heic2Jpeg (file) {
       return new Promise((resolve, reject) => {
@@ -206,8 +165,7 @@ export default {
             return files.name === file.name
           })
           const newObj = obj[0]
-          newObj.heic = true //* Heic 檔不在 previewImg 處理的依據
-          newObj.newFileName = newObj.uniqueIdentifier
+          newObj.heic = true //* Heic 不在 previewImg 處理的判斷依據
           newObj.url = url
           newObj.name = name
           newObj.heic2Jpeg = heicToJpgResult
@@ -239,8 +197,6 @@ export default {
       //* 如果沒被中斷上傳，才丟到 file
       if (!file.aborted) {
         this.file.push(file)
-        // const fileLen = this.file.length
-        // this.file[fileLen - 1].newFileName = this.getRandomFileName() //* 30碼名字
       }
     },
     onFileError (rootFile, file, response, chunk) {
