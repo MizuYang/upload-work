@@ -87,11 +87,11 @@ export default {
         throw err
       }
       //* 檢查檔案大小
-      if (this.setup.hasValidateSize) { //* 需要驗證大小
+      if (this.setup.size.hasValidateSize) { //* 需要驗證大小
         const size = file.size
-        if (size > this.setup.validateSize) {
+        if (size > this.setup.size.validateSize) {
           file.cancel()
-          const err = `請上傳低於 ${this.setup.validateSize / 1024} Kb 的檔案`
+          const err = `請上傳低於 ${this.setup.size.validateSize / 1024} Kb 的檔案`
           this.failFeedback(err)
           throw (err)
         }

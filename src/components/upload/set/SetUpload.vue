@@ -239,7 +239,7 @@ export default {
             B: 'w-xl'
           },
           unit: 'KB',
-          setSize: 161,
+          setSize: 150,
           validateSize: 0,
           hasValidateSize: false
         },
