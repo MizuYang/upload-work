@@ -14,126 +14,21 @@
 
       <br /> <br />
 
-<!-- //! 把 section 複用，利用 modeList -->
-
-    <!-- 上傳格式設定 -->
-
-      <!-- 測試開始 -->
-      <!-- <section class="border-bottom mb-2 pb-2"  v-for="(type, key) in setup.modeList" :key="key">
-        <template v-if="setup.mode===key">
-          <h5>
-            <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('word')">{{ type }} 類型</button>
-          </h5>
-          <div class="d-flex flex-wrap flex-wrap">
-            <div v-for="typeC in type.word" :key="typeC" class="mx-1">
-              <input type="checkbox" :value="typeC" :id="typeC" class="me-1" v-model="setup.validateType">
-              <label :for="typeC">{{ typeC }}</label>
-            </div>
-          </div>
-        </template>
-      </section> -->
-      <!-- 測試結束 -->
-
-<!-- //! 如果遞迴失敗 下面可改 if  / else if -->
-      <!-- Word 檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='word'">
+      <!-- 上傳格式設定 -->
+      <section class="border-bottom mb-2 pb-2" v-for="(type, key) in setup.modeList" :key="key" v-show="setup.mode === key">
         <h5>
-          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('word')">Word 類型</button>
-          <i class="text-danger ms-2 d-none" ref="word">*此欄位必填</i>
+          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck(key)">{{ type }} 類型</button>
+          <i class="text-danger ms-2 d-none" :ref="key">*此欄位必填</i>
         </h5>
         <div class="d-flex flex-wrap flex-wrap">
-          <div v-for="type in type.word" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
-            <label :for="type">{{ type }}</label>
+          <div v-for="item in typeList" :key="item" class="mx-1">
+            <input type="checkbox" :value="item" :id="item" class="me-1" v-model="setup.validateType">
+            <label :for="item">{{ item }}</label>
           </div>
         </div>
       </section>
 
-      <!-- Excel 檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='excel'">
-        <h5>
-          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('excel')">Excel 類型</button>
-          <i class="text-danger ms-2 d-none" ref="excel">*此欄位必填</i>
-        </h5>
-        <div class="d-flex flex-wrap">
-          <div v-for="type in type.excel" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
-            <label :for="type">{{ type }}</label>
-          </div>
-        </div>
-      </section>
-
-      <!-- PPT -->
-      <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='ppt'">
-        <h5>
-          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('ppt')">PPT 類型</button>
-          <i class="text-danger ms-2 d-none" ref="ppt">*此欄位必填</i>
-        </h5>
-        <div class="d-flex flex-wrap">
-          <div v-for="type in type.ppt" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
-            <label :for="type">{{ type }}</label>
-          </div>
-        </div>
-      </section>
-
-      <!-- PDF 檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='pdf'">
-        <h5>
-          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('pdf')">PDF 類型</button>
-          <i class="text-danger ms-2 d-none" ref="pdf">*此欄位必填</i>
-        </h5>
-        <div class="d-flex flex-wrap">
-          <div v-for="type in type.pdf" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
-            <label :for="type">{{ type }}</label>
-          </div>
-        </div>
-      </section>
-
-      <!-- 影像檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='img'">
-        <h5>
-          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('img')">圖片類型</button>
-          <i class="text-danger ms-2 d-none" ref="img">*此欄位必填</i>
-        </h5>
-        <div class="d-flex flex-wrap">
-          <div v-for="type in type.img" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
-            <label :for="type">{{ type }}</label>
-          </div>
-        </div>
-      </section>
-
-      <!-- 視訊檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='video'">
-        <h5>
-          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('video')">影片類型</button>
-          <i class="text-danger ms-2 d-none" ref="video">*此欄位必填</i>
-        </h5>
-        <div class="d-flex flex-wrap">
-          <div v-for="type in type.video" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
-            <label :for="type">{{ type }}</label>
-          </div>
-        </div>
-      </section>
-
-      <!-- 音訊檔案類型 -->
-      <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='music'">
-        <h5>
-          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('music')">音訊類型</button>
-          <i class="text-danger ms-2 d-none" ref="music">*此欄位必填</i>
-        </h5>
-        <div class="d-flex flex-wrap">
-          <div v-for="type in type.music" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
-            <label :for="type">{{ type }}</label>
-          </div>
-        </div>
-      </section>
-
-    <!-- 限制檔案大小 -->
+      <!-- 限制檔案大小 -->
       <input type="radio" name="size" id="freeSize" value="false" v-model="setup.size.hasValidateSize">
       <label for="freeSize">大小無限制</label>
 
@@ -153,7 +48,7 @@
       </template>
       <br /> <br />
 
-    <!-- 限制圖片寬高 -->
+      <!-- 限制圖片寬高 -->
       <div v-if="setup.mode === 'img'">
         <input type="checkbox" id="resolution" v-model="setup.hasValidateResolution">
         <label for="resolution">我要限制圖片寬高</label>
@@ -197,6 +92,10 @@ export default {
       const style = this.setup.size.unitStyle
       const unit = this.setup.size.unit
       return style[unit]
+    },
+    typeList () {
+      const mode = this.setup.mode
+      return this.type[mode]
     }
   },
 
@@ -214,6 +113,7 @@ export default {
           music: '音訊'
         },
         mode: '請選擇檔案格式', //* 用戶選擇上傳模式：Word、PTT..等
+        validateType: [], //* 能上傳的格式
         size: {
           unitList: ['GB', 'MB', 'KB', 'B'],
           unitStyle: {
@@ -227,7 +127,6 @@ export default {
           validateSize: 0,
           hasValidateSize: false
         },
-        validateType: [], //* 能上傳的格式
         hasValidateResolution: false,
         setFinish: false
       },
