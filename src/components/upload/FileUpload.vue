@@ -41,25 +41,28 @@ export default {
   emits: ['getFormData'],
 
   props: {
-    //* 上傳模式 uploadMode
-    uploadMode: {
-      type: String,
-      required: true
-    },
-    //* 檔案大小
-    validateSize: {
-      type: Number
-    },
-    //* 解析度
-    validateResolution: {
-      type: Boolean
-    },
-    validateW: {
-      type: Number
-    },
-    validateH: {
-      type: Number
+    setup: {
+      type: Object
     }
+    // //* 上傳模式 uploadMode
+    // uploadMode: {
+    //   type: String,
+    //   required: true
+    // },
+    // //* 檔案大小
+    // validateSize: {
+    //   type: Number
+    // },
+    // //* 解析度
+    // validateResolution: {
+    //   type: Boolean
+    // },
+    // validateW: {
+    //   type: Number
+    // },
+    // validateH: {
+    //   type: Number
+    // }
   },
 
   data () {
@@ -97,7 +100,7 @@ export default {
     async onFileAdded (file) {
       const type = file.name.split('.').pop()
       // //* 若選圖片上傳 > 檢查檔案格式
-      // if (this.uploadMode === '圖片') {
+      // if (this.setup.mode === 'img') {
       //   if (!this.imgType.includes(type)) {
       //     file.cancel()
       //     const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
@@ -106,55 +109,54 @@ export default {
       //   }
       // }
       //* 檢查檔案格式
-      const validateType = this.options.validateType
-      console.log(validateType)
-      //! validateType 位置抓的不對，先去 setUpload 把options 資料丟出來
-      //! 才有辦法抓到設定檔
-      // if (!validateType.includes(type)) {
-      //   file.cancel()
-      //   const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
-      //   this.failFeedback(err)
-      //   throw err
-      // }
-      //* 檢查檔案大小
-      const size = file.size
-      if (size > this.validateSize) {
+      const validateType = this.setup.validateType
+      if (!validateType.includes(type)) {
         file.cancel()
-        const err = `請上傳低於 ${this.validateSize / 1024} Kb 的檔案`
+        const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
         this.failFeedback(err)
-        throw (err)
+        throw err
       }
-      //* 若 圖片模式+限制圖片寬高 > 檢查檢析度
-      if (this.uploadMode === '圖片') {
+      //* 檢查檔案大小
+      if (this.setup.hasValidateSize) { //* 需要驗證大小
+        const size = file.size
+        if (size > this.setup.validateSize) {
+          file.cancel()
+          const err = `請上傳低於 ${this.setup.validateSize / 1024} Kb 的檔案`
+          this.failFeedback(err)
+          throw (err)
+        }
+      }
+      //* 若為上傳圖片、且須檢查解析度
+      if (this.setup.mode === 'img' && this.setup.hasValidateResolution) {
+        //* heic 先轉檔才取的到寬高，和其他格式分開處理
         if (type === 'heic' || type === 'heif') {
-        //* heic 先轉檔才取的到寬高，所以另外在這處理
           await this.heic2Jpeg(file.file).then(url => {
             const img = new Image()
             img.src = url
             img.onload = () => {
-              if (this.validateResolution) {
-                if (img.width > this.validateW || img.height > this.validateH) {
-                  file.cancel()
-                  this.removeValidateFailFile(file)
-                  const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
-                  this.failFeedback(err)
-                  throw err
-                }
+              // if (this.setup.hasValidateResolution) {
+              if (img.width > this.setup.validateW || img.height > this.setup.validateH) {
+                file.cancel()
+                this.removeValidateFailFile(file)
+                const err = `請上傳 ${this.setup.validateW}*${this.setup.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
+                this.failFeedback(err)
+                throw err
               }
+              // }
             }
           })
-        } else {
+        } else { //* 其他圖片格式在這處理
           await this.getImgSize(file)
             .then(img => {
-              if (this.validateResolution) {
-                if (img.width > this.validateW || img.height > this.validateH) {
-                  file.cancel()
-                  this.removeValidateFailFile(file)
-                  const err = `請上傳 ${this.validateW}*${this.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
-                  this.failFeedback(err)
-                  throw err
-                }
+              // if (this.setup.hasValidateResolution) {
+              if (img.width > this.setup.validateW || img.height > this.setup.validateH) {
+                file.cancel()
+                this.removeValidateFailFile(file)
+                const err = `請上傳 ${this.setup.validateW}*${this.setup.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
+                this.failFeedback(err)
+                throw err
               }
+              // }
             })
         }
       }
@@ -172,8 +174,8 @@ export default {
         img.src = url
         img.onload = function () {
           const imgResolution = {}
-          imgResolution.height = img.naturalWidth
-          imgResolution.width = img.naturalHeight
+          imgResolution.width = img.naturalWidth
+          imgResolution.height = img.naturalHeight
           resolve(imgResolution)
         }
       })

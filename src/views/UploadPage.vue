@@ -1,12 +1,14 @@
 <template>
     <!-- 檔案上傳設定 -->
-    <div v-if="!options.setFinish">
+    <div v-if="!setup.setFinish">
       <SetUpload @setUpload="setUpload"></SetUpload>
     </div>
 
     <!-- 檔案上傳 -->
-    <div v-if="options.setFinish">
-      <FileUpload :validateFormat="options.validateFormat" :validateSize="options.validateSize" :validateResolution="options.validateResolution" :validateW="options.validateW" :validateH="options.validateH" @getFormData="getFormData"></FileUpload>
+    <div v-if="setup.setFinish">
+      <FileUpload :setup="setup" @getFormData="getFormData"></FileUpload>
+
+      <!-- <FileUpload :validateFormat="setup.validateFormat" :validateSize="setup.validateSize" :validateResolution="setup.validateResolution" :validateW="setup.validateW" :validateH="setup.validateH" @getFormData="getFormData"></FileUpload> -->
     </div>
 
 </template>
@@ -25,13 +27,13 @@ export default {
 
   data () {
     return {
-      options: {}
+      setup: {}
     }
   },
 
   methods: {
-    setUpload (options) {
-      this.options = options
+    setUpload (setup) {
+      this.setup = setup
     },
     //* 要給後端的資料
     getFormData (files) {
