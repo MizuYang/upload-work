@@ -82,7 +82,7 @@ export default {
       const validateType = this.setup.validateType
       if (!validateType.includes(type)) {
         file.cancel()
-        const err = `請上傳正確的圖片格式！您上傳的是${type}檔`
+        const err = `請上傳正確的格式！您上傳的是${type}檔`
         this.failFeedback(err)
         throw err
       }

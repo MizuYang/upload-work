@@ -1,9 +1,9 @@
 <template>
     <!-- 上傳模式 -->
-    <header class="text-center mb-3">
+    <header class="text-center mb-3" v-if="!setup.setFinish">
       <h2>上傳設定</h2>
     </header>
-    <main>
+    <main v-if="!setup.setFinish">
      上傳格式：
       <select name="" id="" v-model="setup.mode" @change="changeMode">
         <option selected="請選擇檔案格式" disabled>請選擇檔案格式</option>
@@ -167,44 +167,28 @@
           <i class="text-danger ms-2 d-none" ref="h">*此欄位必填</i>
         </div>
       </div>
-    </main>
 
-    <hr />
+      <hr />
+
+    </main>
 
     <!-- 預覽已設定項目 -->
     <footer class="mt-3">
-      <h3>已設定的項目</h3>
-      <ul class="px-0">
-        <li v-if="setup.size.hasValidateSize==='true' && setup.size.setSize">
-          <span class="fs-5">檔案限制大小：</span>
-          <span class="border-bottom">{{ setup.size.setSize }} {{ setup.size.unit }}</span>
-        </li>
-        <li v-if="setup.hasValidateResolution">
-          <span class="fs-5">圖片解析度：</span>
-          <span v-if="setup.validateW || setup.validateH" class="border-bottom">
-            {{ setup.validateW }} * {{ setup.validateH }}
-          </span>
-        </li>
-        <li v-if="setup.mode!=='請選擇檔案格式'">
-          <span class="fs-5">上傳模式：</span>
-          <span class="border-bottom">{{ setup.modeList[setup.mode] }}</span>
-        </li>
-        <li v-if="setup.validateType.length > 0">
-          <span class="fs-5">檔案格式：</span> <br />
-          <code v-for="type in setup.validateType" :key="type" class="symbol border-bottom">
-            {{ type }}
-          </code>
-        </li>
-      </ul>
-      <div class="text-center mt-3">
-        <button type="button" class="btn btn-primary" @click="startUpload">開始上傳</button>
-      </div>
+      <PreviewSetup :setup="setup"></PreviewSetup>
     </footer>
+
+    <div class="text-center mt-3" v-if="!setup.setFinish">
+      <button type="button" class="btn btn-primary" @click="startUpload">開始上傳</button>
+    </div>
 </template>
 
 <script>
-
+import PreviewSetup from '@/components/upload/function/PreviewSetup.vue'
 export default {
+
+  components: {
+    PreviewSetup
+  },
 
   emits: ['setUpload'],
 
