@@ -175,7 +175,7 @@
     <footer class="mt-3">
       <h3>已設定的項目</h3>
       <ul class="px-0">
-        <li v-if="setup.size.validateSize && setup.size.setSize">
+        <li v-if="setup.size.hasValidateSize==='true' && setup.size.setSize">
           <span class="fs-5">檔案限制大小：</span>
           <span class="border-bottom">{{ setup.size.setSize }} {{ setup.size.unit }}</span>
         </li>
