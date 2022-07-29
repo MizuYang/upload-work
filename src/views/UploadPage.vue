@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import SetUpload from '@/components/upload/set/SetUpload.vue'
+import SetUpload from '@/components/upload/set/SetUploadWrap.vue'
 import FileUpload from '@/components/upload/FileUpload.vue'
 export default {
 
