@@ -10,7 +10,7 @@
         <option :value="key" v-for="(mode, key) in setup.modeList" :key="mode">{{ mode }}</option>
       </select>
 
-      <i class="text-danger ms-2 d-none" data-feedback="mode">*此欄位必填</i>
+      <i class="text-danger ms-2 d-none" ref="mode">*此欄位必填</i>
 
       <br /> <br />
 
@@ -26,7 +26,7 @@
           </h5>
           <div class="d-flex flex-wrap flex-wrap">
             <div v-for="typeC in type.word" :key="typeC" class="mx-1">
-              <input type="checkbox" :value="typeC" :id="typeC" class="me-1" v-model="setup.validateType"  data-type="word">
+              <input type="checkbox" :value="typeC" :id="typeC" class="me-1" v-model="setup.validateType">
               <label :for="typeC">{{ typeC }}</label>
             </div>
           </div>
@@ -34,16 +34,16 @@
       </section> -->
       <!-- 測試結束 -->
 
-//! 如果遞迴失敗 下面可改 if  / else if
+<!-- //! 如果遞迴失敗 下面可改 if  / else if -->
       <!-- Word 檔案類型 -->
       <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='word'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('word')">Word 類型</button>
-          <i class="text-danger ms-2 d-none" data-feedback="word">*此欄位必填</i>
+          <i class="text-danger ms-2 d-none" ref="word">*此欄位必填</i>
         </h5>
         <div class="d-flex flex-wrap flex-wrap">
           <div v-for="type in type.word" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType"  data-type="word">
+            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
             <label :for="type">{{ type }}</label>
           </div>
         </div>
@@ -53,11 +53,11 @@
       <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='excel'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('excel')">Excel 類型</button>
-          <i class="text-danger ms-2 d-none" data-feedback="excel">*此欄位必填</i>
+          <i class="text-danger ms-2 d-none" ref="excel">*此欄位必填</i>
         </h5>
         <div class="d-flex flex-wrap">
           <div v-for="type in type.excel" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType"  data-type="excel">
+            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
             <label :for="type">{{ type }}</label>
           </div>
         </div>
@@ -67,11 +67,11 @@
       <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='ppt'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('ppt')">PPT 類型</button>
-          <i class="text-danger ms-2 d-none" data-feedback="ppt">*此欄位必填</i>
+          <i class="text-danger ms-2 d-none" ref="ppt">*此欄位必填</i>
         </h5>
         <div class="d-flex flex-wrap">
           <div v-for="type in type.ppt" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType"  data-type="ppt">
+            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
             <label :for="type">{{ type }}</label>
           </div>
         </div>
@@ -81,11 +81,11 @@
       <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='pdf'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('pdf')">PDF 類型</button>
-          <i class="text-danger ms-2 d-none" data-feedback="pdf">*此欄位必填</i>
+          <i class="text-danger ms-2 d-none" ref="pdf">*此欄位必填</i>
         </h5>
         <div class="d-flex flex-wrap">
           <div v-for="type in type.pdf" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType"  data-type="pdf">
+            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
             <label :for="type">{{ type }}</label>
           </div>
         </div>
@@ -95,11 +95,11 @@
       <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='img'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('img')">圖片類型</button>
-          <i class="text-danger ms-2 d-none" data-feedback="img">*此欄位必填</i>
+          <i class="text-danger ms-2 d-none" ref="img">*此欄位必填</i>
         </h5>
         <div class="d-flex flex-wrap">
           <div v-for="type in type.img" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType"  data-type="img">
+            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
             <label :for="type">{{ type }}</label>
           </div>
         </div>
@@ -109,11 +109,11 @@
       <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='video'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('video')">影片類型</button>
-          <i class="text-danger ms-2 d-none" data-feedback="video">*此欄位必填</i>
+          <i class="text-danger ms-2 d-none" ref="video">*此欄位必填</i>
         </h5>
         <div class="d-flex flex-wrap">
           <div v-for="type in type.video" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType"  data-type="video">
+            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
             <label :for="type">{{ type }}</label>
           </div>
         </div>
@@ -123,11 +123,11 @@
       <section class="border-bottom mb-2 pb-2" v-show="setup.mode==='music'">
         <h5>
           <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck('music')">音訊類型</button>
-          <i class="text-danger ms-2 d-none" data-feedback="music">*此欄位必填</i>
+          <i class="text-danger ms-2 d-none" ref="music">*此欄位必填</i>
         </h5>
         <div class="d-flex flex-wrap">
           <div v-for="type in type.music" :key="type" class="mx-1">
-            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType"  data-type="music">
+            <input type="checkbox" :value="type" :id="type" class="me-1" v-model="setup.validateType">
             <label :for="type">{{ type }}</label>
           </div>
         </div>
@@ -143,7 +143,7 @@
       <template v-if="setup.hasValidateSize==='true'">
         <label for="validateSize" class="ms-5">檔案大小：</label>
         <input id="validateSize" type="number" placeholder="檔案大小限制" v-model="setup.validateSize" oninput="value=value.replace(/[^\d]/g,'')">
-        <i class="text-danger ms-2 d-none" data-feedback="size">*此欄位必填</i>
+        <i class="text-danger ms-2 d-none" ref="size">*此欄位必填</i>
       </template>
       <br /> <br />
 
@@ -154,11 +154,11 @@
         <div v-if="setup.hasValidateResolution" class="my-3">
           <label for="width">寬：</label>
           <input type="number" id="width" class="inputSize" v-model="setup.validateW" oninput="value=value.replace(/[^\d]/g,'')">
-          <i class="text-danger ms-2 d-none" data-feedback="w">*此欄位必填</i>
+          <i class="text-danger ms-2 d-none" ref="w">*此欄位必填</i>
           <br /> <br />
           <label for="height">高：</label>
           <input type="number" id="height" class="inputSize" v-model="setup.validateH" oninput="value=value.replace(/[^\d]/g,'')">
-          <i class="text-danger ms-2 d-none" data-feedback="h">*此欄位必填</i>
+          <i class="text-danger ms-2 d-none" ref="h">*此欄位必填</i>
         </div>
       </div>
     </main>
@@ -183,7 +183,7 @@
           <span class="fs-5">上傳模式：</span>
           <span class="border-bottom">{{ setup.modeList[setup.mode] }}</span>
         </li>
-        <li v-if="setup.mode!=='請選擇檔案格式'">
+        <li v-if="setup.validateType.length > 0">
           <span class="fs-5">檔案格式：</span> <br />
           <code v-for="type in setup.validateType" :key="type" class="symbol border-bottom">
             {{ type }}
@@ -201,16 +201,6 @@
 export default {
 
   emits: ['setUpload'],
-
-  // watch: {
-  //   setup: {
-  //     handler () {
-  //       this.$emit('setUpload', this.setup)
-  //     },
-  //     deep: true,
-  //     immediate: true
-  //   }
-  // },
 
   data () {
     return {
@@ -254,7 +244,6 @@ export default {
       if (result) {
         this.setup.setFinish = true
         this.$emit('setUpload', this.setup)
-        console.log(this.$parent)
       }
     },
     //* 驗證是否已上傳
@@ -263,26 +252,21 @@ export default {
       //* 上傳模式
       const mode = this.setup.mode
       if (mode === '請選擇檔案格式') {
-        // this.$refs.mode.classList.remove('d-none')
-        document.querySelector('[data-feedback="mode"]').classList.remove('d-none')
+        this.$refs.mode.classList.remove('d-none')
         validate.mode = false
       } else {
-        // this.$refs.mode.classList.add('d-none')
-        document.querySelector('[data-feedback="mode"]').classList.add('d-none')
+        this.$refs.mode.classList.add('d-none')
         validate.mode = true
       }
       //* 限制檔案大小
       const hasValidateSize = this.setup.hasValidateSize
       const size = this.setup.validateSize
-      // console.log('qq', hasValidateSize, typeof (hasValidateSize))
       if (hasValidateSize === 'true') {
         if (!size) {
-          // this.$refs.size.classList.remove('d-none')
-          document.querySelector('[data-feedback="size"]').classList.remove('d-none')
+          this.$refs.size.classList.remove('d-none')
           validate.size = false
         } else if (size && hasValidateSize) {
-          // this.$refs.size.classList.add('d-none')
-          document.querySelector('[data-feedback="size"]').classList.add('d-none')
+          this.$refs.size.classList.add('d-none')
           validate.size = true
         }
       } else {
@@ -295,22 +279,18 @@ export default {
       const h = this.setup.validateH
       if (hasValidateResolution) {
         if (!w) {
-          // this.$refs.w.classList.remove('d-none')
-          document.querySelector('[data-feedback="w"]').classList.remove('d-none')
+          this.$refs.w.classList.remove('d-none')
           validate.w = false
         } else {
-          // this.$refs.w.classList.add('d-none')
-          document.querySelector('[data-feedback="w"]').classList.add('d-none')
+          this.$refs.w.classList.add('d-none')
           validate.w = true
         }
 
         if (!h) {
-          // this.$refs.h.classList.remove('d-none')
-          document.querySelector('[data-feedback="h"]').classList.remove('d-none')
+          this.$refs.h.classList.remove('d-none')
           validate.h = false
         } else {
-          // this.$refs.h.classList.add('d-none')
-          document.querySelector('[data-feedback="h"]').classList.add('d-none')
+          this.$refs.h.classList.add('d-none')
           validate.h = true
         }
       } else {
@@ -319,18 +299,13 @@ export default {
         validate.h = true
       }
       //* 檔案類型
-      const type = this.setup.validateType
-      if (type.length === 0) {
-        // this.$refs.type.classList.remove('d-none')
-        const type = this.setup.mode
-        console.log(type)
-        document.querySelector(`[data-feedback="${type}"]`).classList.remove('d-none')
+      const validateType = this.setup.validateType
+      const type = this.setup.mode
+      if (validateType.length === 0) {
+        this.$refs[type].classList.remove('d-none')
         validate.type = false
       } else {
-        // this.$refs.type.classList.add('d-none')
-        this.$nextTick(() => {
-          document.querySelector(`[data-feedback="${type}"]`).classList.add('d-none')
-        })
+        this.$refs[type].classList.add('d-none')
 
         validate.type = true
       }

@@ -7,8 +7,6 @@
     <!-- 檔案上傳 -->
     <div v-if="setup.setFinish">
       <FileUpload :setup="setup" @getFormData="getFormData"></FileUpload>
-
-      <!-- <FileUpload :validateFormat="setup.validateFormat" :validateSize="setup.validateSize" :validateResolution="setup.validateResolution" :validateW="setup.validateW" :validateH="setup.validateH" @getFormData="getFormData"></FileUpload> -->
     </div>
 
 </template>
@@ -61,7 +59,7 @@ export default {
       //     }
       // #endregion
 
-      // #region
+      // #region //? formData
       // getFormData (obj) {
       //   // console.log(obj)
       //   const formData = new FormData()
