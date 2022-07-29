@@ -1,6 +1,6 @@
 <template>
     <h3>裁切模式</h3>
-    <select name="" id="" v-model="freeCropMode">
+    <select v-model="freeCropMode">
       <option :value="true">自由裁切</option>
       <option :value="false">限制裁切寬高</option>
     </select>

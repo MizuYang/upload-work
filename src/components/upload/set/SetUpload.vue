@@ -5,7 +5,7 @@
     </header>
     <main v-if="!setup.setFinish">
      上傳格式：
-      <select name="" id="" v-model="setup.mode" @change="changeMode">
+      <select v-model="setup.mode" @change="changeMode">
         <option selected="請選擇檔案格式" disabled>請選擇檔案格式</option>
         <option :value="key" v-for="(mode, key) in setup.modeList" :key="mode">{{ mode }}</option>
       </select>

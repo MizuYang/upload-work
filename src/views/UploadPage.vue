@@ -1,8 +1,6 @@
 <template>
     <!-- 檔案上傳設定 -->
-    <!-- <div v-if="!setup.setFinish"> -->
     <SetUpload @setUpload="setUpload"></SetUpload>
-    <!-- </div> -->
 
     <!-- 檔案上傳 -->
     <div v-if="setup.setFinish">
