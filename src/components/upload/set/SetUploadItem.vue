@@ -10,11 +10,11 @@
 
       <br /> <br />
 
-      <!-- 上傳格式設定 -->
+      <!-- 勾選可上傳格式 -->
       <section class="border-bottom mb-2 pb-2" v-for="(type, key) in setup.modeList" :key="key" v-show="setup.mode === key">
         <h5>
-          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck(key)">{{ type }} 類型</button>
-          <i class="text-danger ms-2 d-none" :ref="key">*此欄位必填</i>
+          <button type="button" class="btn btn-dark btn-sm" @click.self="allCheck(key)">{{ type }} 類型  {{ key }}  借放</button>
+          <i class="text-danger ms-2 d-none" :class="key">*此欄位必填</i>
         </h5>
         <div class="d-flex flex-wrap flex-wrap">
           <div v-for="item in typeList" :key="item" class="mx-1">
@@ -22,6 +22,7 @@
             <label :for="item">{{ item }}</label>
           </div>
         </div>
+        <!-- <i class="text-danger ms-2 d-none" :class="key">*此欄位必填</i> -->
       </section>
 
       <!-- 限制檔案大小 -->
@@ -119,8 +120,8 @@ export default {
           hasValidateSize: false
         },
         hasValidateResolution: false,
-        validateW: 0,
-        validateH: 0,
+        validateW: '',
+        validateH: '',
         setFinish: false
       },
       type: {
@@ -137,6 +138,42 @@ export default {
   },
 
   methods: {
+    //* 全部勾選
+    allCheck (type) {
+      const hasCheck = this.allCheckCount[type] === undefined || this.allCheckCount[type] === 1
+      if (hasCheck) {
+        //* 若已勾選過，則將該項目全部取消勾選
+        this.allCheckCount[type] = 0
+        //* 將該類型從 setup 全部移除
+        this.type[type].forEach(type => {
+          const removeIndex = this.setup.validateType.indexOf(type)
+          this.setup.validateType.splice(removeIndex, 1)
+        })
+      } else {
+        //* 若沒勾選過的話，將該類型項目全部勾選
+        this.allCheckCount[type] = 1
+        //* 將該類型新增至 setup
+        this.type[type].forEach(type => {
+          //* 若已有該選該項目，則不再新增進去
+          if (this.setup.validateType.indexOf(type) === -1) {
+            this.setup.validateType.push(type)
+          }
+        })
+      }
+    },
+    //* 下拉選單切換模式
+    changeMode () {
+      const type = this.setup.mode
+      // //* 切換上傳格式，原先的選擇的格式都會清空
+      this.setup.validateType = []
+      // //* 選擇模式後該格式全勾選
+      this.type[type].forEach(type => {
+      //   //* 若已有該選該項目，則不再新增進去
+        if (this.setup.validateType.indexOf(type) === -1) {
+          this.setup.validateType.push(type)
+        }
+      })
+    }
   },
 
   mounted () {

@@ -1,7 +1,7 @@
 <template>
     <!-- 上傳設定 -->
     <main v-if="!setup.setFinish">
-      <SetUploadItem @getSetup="getSetup"></SetUploadItem>
+      <SetUploadItem @getSetup="getSetup" ref="setItem"></SetUploadItem>
 
       <hr />
 
@@ -110,10 +110,10 @@ export default {
       //* 上傳模式
       const mode = this.setup.mode
       if (mode === '請選擇檔案格式') {
-        this.showErrorFeedback('mode')
+        this.showErrorFeedback('mode', true)
         validate.mode = false
       } else {
-        this.hideErrorFeedback('mode')
+        this.hideErrorFeedback('mode', true)
         validate.mode = true
       }
       //* 限制檔案大小
@@ -121,10 +121,10 @@ export default {
       const size = this.setup.size.setSize
       if (hasValidateSize === 'true') {
         if (!size) {
-          this.showErrorFeedback('size')
+          this.showErrorFeedback('size', true)
           validate.size = false
         } else if (size && hasValidateSize) {
-          this.hideErrorFeedback('size')
+          this.hideErrorFeedback('size', true)
           validate.size = true
         }
       } else {
@@ -137,18 +137,18 @@ export default {
       const h = this.setup.validateH
       if (hasValidateResolution) {
         if (!w) {
-          this.showErrorFeedback('w')
+          this.showErrorFeedback('w', true)
           validate.w = false
         } else {
-          this.hideErrorFeedback('w')
+          this.hideErrorFeedback('w', true)
           validate.w = true
         }
 
         if (!h) {
-          this.showErrorFeedback('h')
+          this.showErrorFeedback('h', true)
           validate.h = false
         } else {
-          this.hideErrorFeedback('h')
+          this.hideErrorFeedback('h', true)
           validate.h = true
         }
       } else {
@@ -160,10 +160,10 @@ export default {
       const validateType = this.setup.validateType
       const type = this.setup.mode
       if (validateType.length === 0) {
-        this.showErrorFeedback(type)
+        this.showErrorFeedback(type, false)
         validate.type = false
       } else {
-        this.hideErrorFeedback(type)
+        this.hideErrorFeedback(type, false)
 
         validate.type = true
       }
@@ -173,42 +173,42 @@ export default {
       const success = result === -1? true : false // eslint-disable-line
       return success
     },
-    //* 全部勾選
-    allCheck (type) {
-      const hasCheck = this.allCheckCount[type] === undefined || this.allCheckCount[type] === 1
-      if (hasCheck) {
-        //* 若已勾選過，則將該項目全部取消勾選
-        this.allCheckCount[type] = 0
-        //* 將該類型從 setup 全部移除
-        this.type[type].forEach(type => {
-          const removeIndex = this.setup.validateType.indexOf(type)
-          this.setup.validateType.splice(removeIndex, 1)
-        })
-      } else {
-        //* 若沒勾選過的話，將該類型項目全部勾選
-        this.allCheckCount[type] = 1
-        //* 將該類型新增至 setup
-        this.type[type].forEach(type => {
-          //* 若已有該選該項目，則不再新增進去
-          if (this.setup.validateType.indexOf(type) === -1) {
-            this.setup.validateType.push(type)
-          }
-        })
-      }
-    },
-    //* 下拉選單切換模式
-    changeMode () {
-      const type = this.setup.mode
-      // //* 切換上傳格式，原先的選擇的格式都會清空
-      this.setup.validateType = []
-      // //* 選擇模式後該格式全勾選
-      this.type[type].forEach(type => {
-      //   //* 若已有該選該項目，則不再新增進去
-        if (this.setup.validateType.indexOf(type) === -1) {
-          this.setup.validateType.push(type)
-        }
-      })
-    },
+    // //* 全部勾選
+    // allCheck (type) {
+    //   const hasCheck = this.allCheckCount[type] === undefined || this.allCheckCount[type] === 1
+    //   if (hasCheck) {
+    //     //* 若已勾選過，則將該項目全部取消勾選
+    //     this.allCheckCount[type] = 0
+    //     //* 將該類型從 setup 全部移除
+    //     this.type[type].forEach(type => {
+    //       const removeIndex = this.setup.validateType.indexOf(type)
+    //       this.setup.validateType.splice(removeIndex, 1)
+    //     })
+    //   } else {
+    //     //* 若沒勾選過的話，將該類型項目全部勾選
+    //     this.allCheckCount[type] = 1
+    //     //* 將該類型新增至 setup
+    //     this.type[type].forEach(type => {
+    //       //* 若已有該選該項目，則不再新增進去
+    //       if (this.setup.validateType.indexOf(type) === -1) {
+    //         this.setup.validateType.push(type)
+    //       }
+    //     })
+    //   }
+    // },
+    // //* 下拉選單切換模式
+    // changeMode () {
+    //   const type = this.setup.mode
+    //   // //* 切換上傳格式，原先的選擇的格式都會清空
+    //   this.setup.validateType = []
+    //   // //* 選擇模式後該格式全勾選
+    //   this.type[type].forEach(type => {
+    //   //   //* 若已有該選該項目，則不再新增進去
+    //     if (this.setup.validateType.indexOf(type) === -1) {
+    //       this.setup.validateType.push(type)
+    //     }
+    //   })
+    // },
     //* 單位轉換
     unitChange () {
       const data = {
@@ -224,14 +224,24 @@ export default {
         this.setup.size.validateSize = this.setup.size.setSize * (1024 ** count)
       }
     },
-    showErrorFeedback (item) {
+    showErrorFeedback (item, status) {
       this.$nextTick(() => {
-        this.$refs[item].classList.remove('d-none')
+        if (!status) {
+          //* 勾選可上傳格式的錯誤訊息節點，用 ref 抓不到 DOM，所以這樣寫
+          document.querySelector(`.${item}`).classList.remove('d-none')
+        } else {
+          this.$refs.setItem.$refs[item].classList.remove('d-none')
+        }
       })
     },
-    hideErrorFeedback (item) {
+    hideErrorFeedback (item, status) {
       this.$nextTick(() => {
-        this.$refs[item].classList.add('d-none')
+        if (!status) {
+          //* 勾選可上傳格式的錯誤訊息節點，用 ref 抓不到 DOM，所以這樣寫
+          document.querySelector(`.${item}`).classList.add('d-none')
+        } else {
+          this.$refs.setItem.$refs[item].classList.add('d-none')
+        }
       })
     },
     getSetup (setup) {
