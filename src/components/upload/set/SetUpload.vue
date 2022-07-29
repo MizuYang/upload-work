@@ -141,8 +141,14 @@
       <label for="sizeRule">限制檔案大小</label>
 
       <template v-if="setup.hasValidateSize==='true'">
-        <label for="validateSize" class="ms-5">檔案大小：</label>
-        <input id="validateSize" type="number" placeholder="檔案大小限制" v-model="setup.validateSize" oninput="value=value.replace(/[^\d]/g,'')">
+        <select class="mx-2" v-model="setup.sizeUnit">
+          <option :value="unit" v-for="unit in setup.sizeUnitList" :key="unit">{{ unit }}</option>
+        </select>
+
+        <label for="validateSize" class="ms-3">檔案大小：</label>
+        <input id="validateSize" type="number" v-model="setup.validateSize" oninput="value=value.replace(/[^\d]/g,'')"
+          :class="inputSize">
+          {{ setup.sizeUnit }}
         <i class="text-danger ms-2 d-none" ref="size">*此欄位必填</i>
       </template>
       <br /> <br />
@@ -171,7 +177,7 @@
       <ul class="px-0">
         <li v-if="setup.validateSize">
           <span class="fs-5">檔案限制大小：</span>
-          <span class="border-bottom">{{ setup.validateSize }}</span>
+          <span class="border-bottom">{{ setup.validateSize }} {{ setup.sizeUnit }}</span>
         </li>
         <li v-if="setup.hasValidateResolution">
           <span class="fs-5">圖片解析度：</span>
@@ -202,6 +208,14 @@ export default {
 
   emits: ['setUpload'],
 
+  computed: {
+    inputSize () {
+      const style = this.setup.sizeUnitStyle
+      const unit = this.setup.sizeUnit
+      return style[unit]
+    }
+  },
+
   data () {
     return {
       allCheckCount: {},
@@ -215,9 +229,16 @@ export default {
           video: '影片',
           music: '音訊'
         },
-
         mode: '請選擇檔案格式', //* 用戶選擇上傳模式：Word、PTT..等
-        validateSize: 153600,
+        sizeUnitList: ['GB', 'MB', 'KB', 'B'],
+        sizeUnitStyle: {
+          GB: 'w-s',
+          MB: 'w-m',
+          KB: 'w-l',
+          B: 'w-xl'
+        },
+        sizeUnit: 'KB',
+        validateSize: 161,
         validateType: [], //* 能上傳的格式
         hasValidateResolution: false,
         setFinish: false,
@@ -242,6 +263,11 @@ export default {
 
       //* 驗證通過才顯示上傳
       if (result) {
+        //* 處理檔案大小單位
+        if (this.setup.hasValidateSize) {
+          this.unitChange()
+        }
+        //* 開啟檔案上傳、隱藏上傳設定
         this.setup.setFinish = true
         this.$emit('setUpload', this.setup)
       }
@@ -350,6 +376,21 @@ export default {
           this.setup.validateType.push(type)
         }
       })
+    },
+    //* 單位轉換
+    unitChange () {
+      const data = {
+        GB: 3,
+        MB: 2,
+        KB: 1,
+        B: 0
+      }
+      const unit = this.setup.sizeUnit
+      const count = data[unit]
+      //* 若是 B 則不需轉換單位
+      if (count) {
+        this.setup.validateSize = this.setup.validateSize * (1024 ** count)
+      }
     }
   }
 
@@ -362,5 +403,18 @@ export default {
 }
 .symbol:last-child::after {
   content: ''
+}
+//* 檔案大小單位欄位尺寸
+.w-s {
+  width: 40px;
+}
+.w-m {
+  width: 50px;
+}
+.w-l {
+  width: 60px;
+}
+.w-xl {
+  width: 90px;
 }
 </style>
