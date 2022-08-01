@@ -135,12 +135,6 @@ export default {
         }
       }
 
-      //* 若限制僅能上傳單一檔案
-      if (this.options.singleFile) {
-        this.file = []
-        this.file.push(file)
-      }
-
       //* 驗證成功
       this.successFeedback()
       this.panelShow = true
@@ -218,6 +212,12 @@ export default {
 
       //* 如果沒被中斷上傳，才丟到 file
       if (!file.aborted) {
+        this.file.push(file)
+      }
+
+      //* 若限制僅能上傳單一檔案
+      if (this.options.singleFile) {
+        this.file = []
         this.file.push(file)
       }
     },
