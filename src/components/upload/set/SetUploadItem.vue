@@ -1,12 +1,15 @@
 <template>
       <h2 class="text-center mb-3" v-if="!setup.setFinish">上傳設定</h2>
-      上傳格式：
-      <select v-model="setup.mode" @change="changeMode">
-        <option selected="請選擇檔案格式" disabled>請選擇檔案格式</option>
-        <option :value="key" v-for="(mode, key) in setup.modeList" :key="mode">{{ mode }}</option>
-      </select>
+      <!-- 上傳格式設定 -->
+      <section>
+        上傳格式：
+        <select v-model="setup.mode" @change="changeMode">
+          <option selected="請選擇檔案格式" disabled>請選擇檔案格式</option>
+          <option :value="key" v-for="(mode, key) in setup.modeList" :key="mode">{{ mode }}</option>
+        </select>
 
       <i class="text-danger ms-2 d-none" ref="mode">*此欄位必填</i>
+      </section>
 
       <br /> <br />
 
@@ -25,27 +28,29 @@
       </section>
 
       <!-- 限制檔案大小 -->
-      <input type="radio" name="size" id="freeSize" value="false" v-model="setup.size.hasValidateSize">
-      <label for="freeSize">大小無限制</label>
+      <section>
+        <input type="radio" name="size" id="freeSize" value="false" v-model="setup.size.hasValidateSize">
+        <label for="freeSize">大小無限制</label>
 
-      <input type="radio" name="size" id="sizeRule" class="ms-3" value="true" v-model="setup.size.hasValidateSize">
-      <label for="sizeRule">限制檔案大小</label>
+        <input type="radio" name="size" id="sizeRule" class="ms-3" value="true" v-model="setup.size.hasValidateSize">
+        <label for="sizeRule">限制檔案大小</label>
 
-      <template v-if="setup.size.hasValidateSize==='true'">
-        <select class="mx-2" v-model="setup.size.unit">
-          <option :value="unit" v-for="unit in setup.size.unitList" :key="unit">{{ unit }}</option>
-        </select>
+        <template v-if="setup.size.hasValidateSize==='true'">
+          <select class="mx-2" v-model="setup.size.unit">
+            <option :value="unit" v-for="unit in setup.size.unitList" :key="unit">{{ unit }}</option>
+          </select>
 
-        <label for="validateSize" class="ms-3">檔案大小：</label>
-        <input id="validateSize" type="number" v-model="setup.size.setSize" oninput="value=value.replace(/[^\d]/g,'')"
-          :class="inputSize">
-          {{ setup.size.unit }}
-        <i class="text-danger ms-2 d-none" ref="size">*此欄位必填</i>
-      </template>
+          <label for="validateSize" class="ms-3">檔案大小：</label>
+          <input id="validateSize" type="number" v-model="setup.size.setSize" oninput="value=value.replace(/[^\d]/g,'')"
+            :class="inputSize">
+            {{ setup.size.unit }}
+          <i class="text-danger ms-2 d-none" ref="size">*此欄位必填</i>
+        </template>
+      </section>
       <br /> <br />
 
       <!-- 限制圖片寬高 -->
-      <div v-if="setup.mode === 'img'">
+      <section v-if="setup.mode === 'img'">
         <input type="checkbox" id="resolution" v-model="setup.hasValidateResolution">
         <label for="resolution">我要限制圖片寬高</label>
         <div v-if="setup.hasValidateResolution" class="my-3">
@@ -57,7 +62,7 @@
           <input type="number" id="height" class="inputSize" v-model="setup.validateH" oninput="value=value.replace(/[^\d]/g,'')">
           <i class="text-danger ms-2 d-none" ref="h">*此欄位必填</i>
         </div>
-      </div>
+      </section>
 </template>
 
 <script>

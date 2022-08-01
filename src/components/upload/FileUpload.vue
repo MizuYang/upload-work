@@ -55,7 +55,8 @@ export default {
         target: '/', // 測試上傳
         testChunks: true,
         chunkSize: '2048000', // 切塊大小
-        maxChunkRetries: 3 // 最大自动失败重试上传次数
+        maxChunkRetries: 3, // 最大自动失败重试上传次数
+        singleFile: true //* 僅能上傳單一檔案
       },
       attrs: {
         accept: 'image/*'
@@ -190,6 +191,18 @@ export default {
     },
     onFileProgress (rootFile, file, chunk) {
       console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
+
+      console.log(file.uniqueIdentifier)
+
+      console.log(this.$refs.uploader)
+      // const index = this.findFileById(file.uniqueIdentifier) // 通过index来获取对应的文件progress
+      // p = Math.round(file.progress() * 100) // eslint-disable-line
+      // if (index > -1) {
+      // if (p < 100) { // eslint-disable-line
+      // this.fileList[0].progress = p // eslint-disable-line
+      // }
+      // this.fileList[0].status = file.status
+      // }
     },
     onFileSuccess (rootFile, file, response, chunk) {
       const isHeic = 'heic'
@@ -268,6 +281,14 @@ export default {
       this.$refs.feedback.className = 'success text-success'
     }
   }
+  // mounted () {
+  //   const file = this.$refs.uploader.uploader
+  //   setInterval(() => {
+  //     file.getRoot()
+  //     console.log(file)
+  //     console.log(file.getRoot())
+  //   }, 1500)
+  // }
 
 }
 </script>
