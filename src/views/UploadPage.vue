@@ -1,6 +1,6 @@
 <template>
     <!-- 檔案上傳設定 -->
-    <SetUpload @setUpload="setUpload"></SetUpload>
+    <SetUploadWrap @setUpload="setUpload"></SetUploadWrap>
 
     <!-- 檔案上傳 -->
     <div v-if="setup.setFinish">
@@ -10,14 +10,14 @@
 </template>
 
 <script>
-import SetUpload from '@/components/upload/set/SetUploadWrap.vue'
+import SetUploadWrap from '@/components/upload/set/SetUploadWrap.vue'
 import FileUpload from '@/components/upload/FileUpload.vue'
 export default {
 
   // ! 檔案大小 上傳驗證失敗檔案第二次，不會跳錯
 
   components: {
-    SetUpload,
+    SetUploadWrap,
     FileUpload
   },
 
