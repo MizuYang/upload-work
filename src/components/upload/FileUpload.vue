@@ -49,7 +49,6 @@ export default {
   data () {
     return {
       file: [], //* 給後端的 file
-      // uploader: null,
       options: {
         // target: '//localhost:3000/upload', // '//jsonplaceholder.typicode.com/posts/',
         target: '/', // 測試上傳
@@ -89,7 +88,7 @@ export default {
         throw err
       }
       //* 檢查檔案大小
-      if (this.setup.size.hasValidateSize) { //* 需要驗證大小
+      if (this.setup.size.hasValidateSize) {
         const size = file.size
         if (size > this.setup.size.validateSize) {
           file.cancel()
@@ -106,7 +105,7 @@ export default {
           await this.heic2Jpeg(file.file).then(url => {
             const img = new Image()
             img.src = url
-            if (this.setup.hasValidateResolution) { //* 須檢查解析度
+            if (this.setup.hasValidateResolution) {
               img.onload = () => {
                 if (img.width > this.setup.validateW || img.height > this.setup.validateH) {
                   file.cancel()
@@ -122,7 +121,7 @@ export default {
         } else { //* 其他圖片格式在這處理
           await this.getImgSize(file)
             .then(img => {
-              if (this.setup.hasValidateResolution) { //* 須檢查解析度
+              if (this.setup.hasValidateResolution) {
                 if (img.width > this.setup.validateW || img.height > this.setup.validateH) {
                   file.cancel()
                   this.removeValidateFailFile(file)
@@ -191,18 +190,6 @@ export default {
     },
     onFileProgress (rootFile, file, chunk) {
       console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
-
-      console.log(file.uniqueIdentifier)
-
-      console.log(this.$refs.uploader)
-      // const index = this.findFileById(file.uniqueIdentifier) // 通过index来获取对应的文件progress
-      // p = Math.round(file.progress() * 100) // eslint-disable-line
-      // if (index > -1) {
-      // if (p < 100) { // eslint-disable-line
-      // this.fileList[0].progress = p // eslint-disable-line
-      // }
-      // this.fileList[0].status = file.status
-      // }
     },
     onFileSuccess (rootFile, file, response, chunk) {
       const isHeic = 'heic'
@@ -287,14 +274,6 @@ export default {
       this.$refs.feedback.className = 'success text-success'
     }
   }
-  // mounted () {
-  //   const file = this.$refs.uploader.uploader
-  //   setInterval(() => {
-  //     file.getRoot()
-  //     console.log(file)
-  //     console.log(file.getRoot())
-  //   }, 1500)
-  // }
 
 }
 </script>
