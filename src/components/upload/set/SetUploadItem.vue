@@ -1,7 +1,7 @@
 <template>
       <h2 class="text-center mb-3" v-if="!setup.setFinish">上傳設定</h2>
       <!-- 上傳格式設定 -->
-      <section>
+      <section class="mb-3">
         上傳格式：
         <select v-model="setup.mode" @change="changeMode">
           <option selected="請選擇檔案格式" disabled>請選擇檔案格式</option>
@@ -10,8 +10,6 @@
 
       <i class="text-danger ms-2 d-none" ref="mode">*此欄位必填</i>
       </section>
-
-      <br /> <br />
 
       <!-- 勾選可上傳格式 -->
       <section class="border-bottom mb-2 pb-2" v-for="(type, key) in setup.modeList" :key="key" v-show="setup.mode === key">
@@ -28,7 +26,7 @@
       </section>
 
       <!-- 限制檔案大小 -->
-      <section>
+      <section class="mb-3">
         <input type="radio" name="size" id="freeSize" value="false" v-model="setup.size.hasValidateSize">
         <label for="freeSize">大小無限制</label>
 
@@ -47,7 +45,15 @@
           <i class="text-danger ms-2 d-none" ref="size">*此欄位必填</i>
         </template>
       </section>
-      <br /> <br />
+
+      <!-- 設定上傳單一檔案、多個檔案 -->
+      <section class="mb-3">
+        <input type="radio" id="multiple" name="uploadFileNum" :value="false" v-model="setup.singleFile">
+        <label for="multiple">上傳多檔</label>
+
+        <input type="radio" id="single" name="uploadFileNum" :value="true" v-model="setup.singleFile" class="ms-2">
+        <label for="single">上傳單檔</label>
+      </section>
 
       <!-- 限制圖片寬高 -->
       <section v-if="setup.mode === 'img'">
@@ -123,6 +129,7 @@ export default {
         hasValidateResolution: false,
         validateW: '',
         validateH: '',
+        singleFile: false, //* 僅能上傳單個檔案
         setFinish: false
       },
       type: {

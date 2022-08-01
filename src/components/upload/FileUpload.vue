@@ -20,7 +20,7 @@
   </div>
 
   <!-- 圖片預覽 -->
-  <PreviewImg :file="file" :mode="setup.mode"></PreviewImg>
+  <PreviewImg :file="file" :mode="setup.mode" :singleFile="singleFile"></PreviewImg>
 
   <!-- 確定上傳 -->
   <div class="text-center my-2" v-if="Object.keys(file).length > 0">
@@ -56,7 +56,7 @@ export default {
         testChunks: true,
         chunkSize: '2048000', // 切塊大小
         maxChunkRetries: 3, // 最大自动失败重试上传次数
-        singleFile: true //* 僅能上傳單一檔案
+        singleFile: this.setup.singleFile //* 僅能上傳單一檔案
       },
       attrs: {
         accept: 'image/*'
@@ -133,6 +133,12 @@ export default {
               }
             })
         }
+      }
+
+      //* 若限制僅能上傳單一檔案
+      if (this.options.singleFile) {
+        this.file = []
+        this.file.push(file)
       }
 
       //* 驗證成功
