@@ -82,6 +82,7 @@ export default {
       const validateType = this.setup.validateType
       if (!validateType.includes(type)) {
         file.cancel()
+        file.ignored = true
         const err = `請上傳正確的格式！您上傳的是${type}檔`
         this.failFeedback(err)
         throw err
@@ -91,6 +92,7 @@ export default {
         const size = file.size
         if (size > this.setup.size.validateSize) {
           file.cancel()
+          file.ignored = true
           const err = `請上傳低於 ${this.setup.size.validateSize / 1024} Kb 的檔案`
           this.failFeedback(err)
           throw (err)
@@ -107,6 +109,7 @@ export default {
               img.onload = () => {
                 if (img.width > this.setup.validateW || img.height > this.setup.validateH) {
                   file.cancel()
+                  file.ignored = true
                   this.removeValidateFailFile(file)
                   const err = `請上傳 ${this.setup.validateW}*${this.setup.validateH} 的圖片，您上傳的是${img.width}*${img.height}`
                   this.failFeedback(err)
